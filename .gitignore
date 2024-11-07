@@ -1,13 +1,18 @@
+# idea folders
 .idea/
 .vscode/
 
+# frontend
 frontend/.idea/
 frontend/.vscode/
+frontend/dist/
+frontend/build/
 frontend/node_modules/
 frontend/npm-debug.log*
 frontend/yarn-error.log
 frontend/.env
 
+# backend
 backend/.idea/
 backend/.vscode/
 backend/target/
@@ -16,4 +21,11 @@ backend/*.iml
 backend/.project
 backend/*.log
 
-
+# terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*.tfvars
+terraform/crash.log
+terraform/*.tfplan
+terraform/.terraform.lock.hcl

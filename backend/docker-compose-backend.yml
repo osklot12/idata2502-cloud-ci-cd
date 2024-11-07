@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  spring-backend:
+    image: backend-image:latest
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5433/task_manager_db
+      SPRING_DATASOURCE_USERNAME: trump
+      SPRING_DATASOURCE_PASSWORD: not_harris
