@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .  # Points to the directory where the Dockerfile is located
+    ports:
+      - "3000:3000"  # Maps port 3000 on your host to port 3000 in the container
+    networks:
+      - frontend-network
+
+networks:
+  frontend-network:
+    driver: bridge
