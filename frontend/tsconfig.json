@@ -1,16 +1,16 @@
 {
-    "compilerOptions": {
-      "module": "ESNext",
-      "target": "ESNext",
-      "moduleResolution": "Node",
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "baseUrl": "./",
-      "paths": {
-        "$components/*": ["src/components/*"]
-      }
-    },
-    "include": ["src"],
-    "exclude": ["node_modules"]
-  }
-  
+  "compilerOptions": {
+    "types": ["vitest"],
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "paths": {
+      "$components/*": ["src/components/*"]
+    }
+  },
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.svelte"],
+  "exclude": ["node_modules"]
+}
