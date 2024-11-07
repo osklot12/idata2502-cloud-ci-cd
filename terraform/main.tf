@@ -55,6 +55,7 @@ resource "google_compute_instance" "spring_backend" {
   EOT
 }
 
+
 resource "google_compute_instance" "postgresql_db" {
   name         = "postgresql-db"
   machine_type = "e2-micro"
