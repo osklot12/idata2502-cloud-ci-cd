@@ -1,0 +1,89 @@
+name: Build and Deploy Containers
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:20.10.7
+        options: --privileged
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Docker Buildx for building multi-platform images if needed
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Log in to Docker Hub to push images
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build and push the Svelte frontend image
+      - name: Build Svelte frontend and push image
+        run: |
+          docker build -t osklot12/svelte-frontend:latest ./frontend
+          docker push osklot12/svelte-frontend:latest
+
+      # Set up JDK 17 for building the Spring Boot application
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      # Build the Spring Boot application using Maven
+      - name: Build Spring Boot application
+        run: |
+          cd backend
+          ./mvnw clean package -DskipTests  # or 'mvn' if the Maven wrapper isn't present
+
+      # Build and push the Spring Boot backend image
+      - name: Build and push Spring Boot backend image
+        run: |
+          docker build -t osklot12/spring-backend:latest ./backend
+          docker push osklot12/spring-backend:latest
+
+      # Set up the gcloud CLI for deployment
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: 'latest'
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+          project_id: 'idata2502-ci-cd'
+
+      # Authenticate Docker with gcloud (for private Google Container Registry, if needed)
+      - name: Authenticate Docker with gcloud
+        run: |
+          gcloud auth configure-docker
+
+      # Deploy Svelte frontend to GCE
+      - name: Deploy Svelte Frontend Container to GCE
+        run: |
+          gcloud compute ssh user@${{ secrets.GCD_HOST_FRONTEND }} --command="
+          docker pull osklot12/svelte-frontend:latest &&
+          docker stop svelte-frontend || true &&
+          docker rm svelte-frontend || true &&
+          docker run -d -p 80:80 --name svelte-frontend osklot12/svelte-frontend:latest
+          "
+
+      # Deploy Spring Boot backend to GCE
+      - name: Deploy Spring Boot Backend Container to GCE
+        run: |
+          gcloud compute ssh user@${{ secrets.GCD_HOST_BACKEND }} --command="
+          docker pull osklot12/spring-backend:latest &&
+          docker stop spring-backend || true &&
+          docker rm spring-backend || true &&
+          docker run -d -p 8080:8080 --name spring-backend osklot12/spring-backend:latest
+          "

@@ -29,3 +29,6 @@ terraform/*.tfvars
 terraform/crash.log
 terraform/*.tfplan
 terraform/.terraform.lock.hcl
+
+# secrets
+.secrets
