@@ -71,7 +71,7 @@ jobs:
       # Deploy Svelte frontend to GCE
       - name: Deploy Svelte Frontend Container to GCE
         run: |
-          gcloud compute ssh user@${{ secrets.GCD_HOST_FRONTEND }} --command="
+          gcloud compute ssh debian@${{ secrets.GCD_HOST_FRONTEND }} --command="
           docker pull osklot12/svelte-frontend:latest &&
           docker stop svelte-frontend || true &&
           docker rm svelte-frontend || true &&
@@ -81,7 +81,7 @@ jobs:
       # Deploy Spring Boot backend to GCE
       - name: Deploy Spring Boot Backend Container to GCE
         run: |
-          gcloud compute ssh user@${{ secrets.GCD_HOST_BACKEND }} --command="
+          gcloud compute ssh debian@${{ secrets.GCD_HOST_BACKEND }} --command="
           docker pull osklot12/spring-backend:latest &&
           docker stop spring-backend || true &&
           docker rm spring-backend || true &&
