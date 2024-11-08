@@ -137,12 +137,15 @@ resource "google_compute_firewall" "allow_http_frontend" {
   name = "allow-http-frontend"
   network = "default"
 
+  # allowing tcp traffic on port 80
   allow {
     protocol = "tcp"
     ports = ["80"]
   }
 
+  # allowing all ip addresses
   source_ranges = ["0.0.0.0/0"]
 
+  # setting target tags
   target_tags = ["frontend"]
 }
