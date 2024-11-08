@@ -9,6 +9,7 @@ resource "google_compute_instance" "svelte_frontend" {
   machine_type = "e2-micro"
   zone         = "europe-north1-a"
 
+  # configuring boot image
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"
@@ -16,20 +17,24 @@ resource "google_compute_instance" "svelte_frontend" {
     }
   }
 
+  # configuring network interface
   network_interface {
     network       = "default"
     access_config {}
   }
 
+  # using the terraform service account
   service_account {
     email = "terraform-service-account@idata2502-ci-cd.iam.gserviceaccount.com"
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 
+  # setting up public ssh key
   metadata = {
-    ssh-keys = "debian:${file("${path.module}/.ssh/github_actions_key.pub")}"
+    ssh-keys = "debian:${file("${path.module}/../.ssh/github_actions_key.pub")}"
   }
 
+  # setting up environment
   metadata_startup_script = <<-EOT
     #!/bin/bash
     apt-get update
@@ -45,6 +50,7 @@ resource "google_compute_instance" "spring_backend" {
   machine_type = "e2-micro"
   zone         = "europe-north1-a"
 
+  # configuring boot image
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"
@@ -52,20 +58,24 @@ resource "google_compute_instance" "spring_backend" {
     }
   }
 
+  # configuring network interface
   network_interface {
     network       = "default"
     access_config {}
   }
 
+  # using the terraform service account
   service_account {
     email = "terraform-service-account@idata2502-ci-cd.iam.gserviceaccount.com"
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 
+  # setting up public ssh key
   metadata = {
-    ssh-keys = "debian:${file("${path.module}/.ssh/github_actions_key.pub")}"  # Public key for the 'debian' user
+    ssh-keys = "debian:${file("${path.module}/../.ssh/github_actions_key.pub")}"  # Public key for the 'debian' user
   }
 
+  # setting up environment
   metadata_startup_script = <<-EOT
     #!/bin/bash
     apt-get update
@@ -81,6 +91,7 @@ resource "google_compute_instance" "postgresql_db" {
   machine_type = "e2-micro"
   zone         = "europe-north1-a"
 
+  # configuring boot image
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"
@@ -88,20 +99,24 @@ resource "google_compute_instance" "postgresql_db" {
     }
   }
 
+  # configuring network interface
   network_interface {
     network       = "default"
     access_config {}
   }
 
+  # using the terraform service account
   service_account {
     email = "terraform-service-account@idata2502-ci-cd.iam.gserviceaccount.com"
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 
+  # setting up public ssh key
   metadata = {
-    ssh-keys = "debian:${file("${path.module}/.ssh/github_actions_key.pub")}"  # Public key for the 'debian' user
+    ssh-keys = "debian:${file("${path.module}/../.ssh/github_actions_key.pub")}"  # Public key for the 'debian' user
   }
 
+  # setting up environment
   metadata_startup_script = <<-EOT
     #!/bin/bash
     apt-get update
