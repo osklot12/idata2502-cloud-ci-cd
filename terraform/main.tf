@@ -43,6 +43,9 @@ resource "google_compute_instance" "svelte_frontend" {
     systemctl start docker
     usermod -aG docker debian
   EOT
+
+  # setting frontend tag for network rule purpose
+  tags = ["frontend"]
 }
 
 # google compute instance for spring
@@ -127,4 +130,19 @@ resource "google_compute_instance" "postgresql_db" {
     systemctl start docker
     usermod -aG docker debian
   EOT
+}
+
+# setting firewall rule for http traffic to the frontend
+resource "google_compute_firewall" "allow_http_frontend" {
+  name = "allow-http-frontend"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports = ["80"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+
+  target_tags = ["frontend"]
 }
