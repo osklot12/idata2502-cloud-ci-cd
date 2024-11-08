@@ -60,7 +60,9 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > ~/.ssh/google_compute_engine
+          echo "${{ secrets.GCE_SSH_PUBLIC_KEY }}" > ~/.ssh/google_compute_engine.pub
           chmod 600 ~/.ssh/google_compute_engine
+          chmod 600 ~/.ssh/google_compute_engine.pub
 
       # Authenticate with Google Cloud using google-github-actions/auth
       - name: Authenticate to Google Cloud
