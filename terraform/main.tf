@@ -26,6 +26,10 @@ resource "google_compute_instance" "svelte_frontend" {
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 
+  metadata = {
+    ssh-keys = "debian:${file("${path.module}/.ssh/github_actions_key.pub")}"
+  }
+
   metadata_startup_script = <<-EOT
     #!/bin/bash
     apt-get update
@@ -58,6 +62,10 @@ resource "google_compute_instance" "spring_backend" {
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 
+  metadata = {
+    ssh-keys = "debian:${file("${path.module}/.ssh/github_actions_key.pub")}"  # Public key for the 'debian' user
+  }
+
   metadata_startup_script = <<-EOT
     #!/bin/bash
     apt-get update
@@ -88,6 +96,10 @@ resource "google_compute_instance" "postgresql_db" {
   service_account {
     email = "terraform-service-account@idata2502-ci-cd.iam.gserviceaccount.com"
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+
+  metadata = {
+    ssh-keys = "debian:${file("${path.module}/.ssh/github_actions_key.pub")}"  # Public key for the 'debian' user
   }
 
   metadata_startup_script = <<-EOT
