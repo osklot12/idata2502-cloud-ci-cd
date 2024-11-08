@@ -41,6 +41,7 @@ resource "google_compute_instance" "svelte_frontend" {
     apt-get install -y docker.io
     systemctl enable docker
     systemctl start docker
+    usermod -aG docker debian
   EOT
 }
 
@@ -82,6 +83,7 @@ resource "google_compute_instance" "spring_backend" {
     apt-get install -y docker.io
     systemctl enable docker
     systemctl start docker
+    usermod -aG docker debian
   EOT
 }
 
@@ -123,5 +125,6 @@ resource "google_compute_instance" "postgresql_db" {
     apt-get install -y docker.io
     systemctl enable docker
     systemctl start docker
+    usermod -aG docker debian
   EOT
 }

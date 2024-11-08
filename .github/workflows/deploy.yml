@@ -59,7 +59,7 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > ~/.ssh/github_actions_key
+          echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > ~/.ssh/google_compute_engine
           chmod 600 ~/.ssh/github_actions_key
 
       # Authenticate with Google Cloud using google-github-actions/auth
@@ -78,7 +78,7 @@ jobs:
       # Deploy Svelte frontend using SSH
       - name: Deploy Svelte Frontend Container to GCE
         run: |
-          gcloud compute ssh debian@svelte-frontend --zone="europe-north1-a" --command="
+          gcloud compute ssh debian@svelte-frontend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
           docker pull osklot12/svelte-frontend:latest &&
           docker stop svelte-frontend || true &&
           docker rm svelte-frontend || true &&
@@ -88,7 +88,7 @@ jobs:
       # Deploy Spring Boot backend using SSH
       - name: Deploy Spring Boot Backend Container to GCE
         run: |
-          gcloud compute ssh debian@$spring-backend --zone="europe-north1-a" --command="
+          gcloud compute ssh debian@$spring-backend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
           docker pull osklot12/spring-backend:latest &&
           docker stop spring-backend || true &&
           docker rm spring-backend || true &&
