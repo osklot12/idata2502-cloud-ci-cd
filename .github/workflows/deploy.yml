@@ -55,7 +55,7 @@ jobs:
           docker build -t osklot12/spring-backend:latest ./backend
           docker push osklot12/spring-backend:latest
 
-      # Set up the gcloud CLI for deployment
+      # set up cloud sdk
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
@@ -63,25 +63,31 @@ jobs:
           service_account_key: ${{ secrets.GCP_CREDENTIALS }}
           project_id: 'idata2502-ci-cd'
 
+      # set active gcloud account
+      - name: Set active gcloud account
+        run: |
+          gcloud config set account ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+
       # Authenticate Docker with gcloud (for private Google Container Registry, if needed)
       - name: Authenticate Docker with gcloud
         run: |
           gcloud auth configure-docker
 
-      # Deploy Svelte frontend to GCE
+      # Deploy Svelte frontend using SSH
       - name: Deploy Svelte Frontend Container to GCE
         run: |
-          gcloud compute ssh debian@${{ secrets.GCD_HOST_FRONTEND }} --command="
+          gcloud compute ssh debian@${{ secrets.GCP_HOST_FRONTEND }} --command="
           docker pull osklot12/svelte-frontend:latest &&
           docker stop svelte-frontend || true &&
           docker rm svelte-frontend || true &&
           docker run -d -p 80:80 --name svelte-frontend osklot12/svelte-frontend:latest
           "
 
-      # Deploy Spring Boot backend to GCE
+      # Deploy Spring Boot backend using SSH
       - name: Deploy Spring Boot Backend Container to GCE
         run: |
-          gcloud compute ssh debian@${{ secrets.GCD_HOST_BACKEND }} --command="
+          gcloud compute ssh debian@${{ secrets.GCP_HOST_BACKEND }} --command="
           docker pull osklot12/spring-backend:latest &&
           docker stop spring-backend || true &&
           docker rm spring-backend || true &&
