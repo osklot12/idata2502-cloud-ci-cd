@@ -47,7 +47,7 @@ jobs:
       - name: Build Spring Boot application
         run: |
           cd backend
-          ./mvnw clean package -DskipTests  # or 'mvn' if the Maven wrapper isn't present
+          ./mvnw clean package -DskipTests
 
       # Build and push the Spring Boot backend image
       - name: Build and push Spring Boot backend image
@@ -55,24 +55,18 @@ jobs:
           docker build -t osklot12/spring-backend:latest ./backend
           docker push osklot12/spring-backend:latest
 
-      # set up cloud sdk
+      # Authenticate with Google Cloud using google-github-actions/auth
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # Set up Cloud SDK
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           version: 'latest'
-          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
           project_id: 'idata2502-ci-cd'
-
-      # set active gcloud account
-      - name: Set active gcloud account
-        run: |
-          gcloud config set account ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
-
-
-      # Authenticate Docker with gcloud (for private Google Container Registry, if needed)
-      - name: Authenticate Docker with gcloud
-        run: |
-          gcloud auth configure-docker
 
       # Deploy Svelte frontend using SSH
       - name: Deploy Svelte Frontend Container to GCE
