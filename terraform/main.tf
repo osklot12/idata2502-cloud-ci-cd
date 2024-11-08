@@ -3,6 +3,7 @@ provider "google" {
   region  = "europe-north1"
 }
 
+# google compute instance for frontend
 resource "google_compute_instance" "svelte_frontend" {
   name         = "svelte-frontend"
   machine_type = "e2-micro"
@@ -20,6 +21,11 @@ resource "google_compute_instance" "svelte_frontend" {
     access_config {}
   }
 
+  service_account {
+    email = "terraform-service-account@idata2502-ci-cd.iam.gserviceaccount.com"
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+
   metadata_startup_script = <<-EOT
     #!/bin/bash
     apt-get update
@@ -29,6 +35,7 @@ resource "google_compute_instance" "svelte_frontend" {
   EOT
 }
 
+# google compute instance for spring
 resource "google_compute_instance" "spring_backend" {
   name         = "spring-backend"
   machine_type = "e2-micro"
@@ -46,6 +53,11 @@ resource "google_compute_instance" "spring_backend" {
     access_config {}
   }
 
+  service_account {
+    email = "terraform-service-account@idata2502-ci-cd.iam.gserviceaccount.com"
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+
   metadata_startup_script = <<-EOT
     #!/bin/bash
     apt-get update
@@ -55,7 +67,7 @@ resource "google_compute_instance" "spring_backend" {
   EOT
 }
 
-
+# google compute instance for postgresql db
 resource "google_compute_instance" "postgresql_db" {
   name         = "postgresql-db"
   machine_type = "e2-micro"
@@ -71,6 +83,11 @@ resource "google_compute_instance" "postgresql_db" {
   network_interface {
     network       = "default"
     access_config {}
+  }
+
+  service_account {
+    email = "terraform-service-account@idata2502-ci-cd.iam.gserviceaccount.com"
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 
   metadata_startup_script = <<-EOT
