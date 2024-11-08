@@ -63,6 +63,24 @@ resource "google_compute_subnetwork" "tomorrow_subnetwork" {
   network = google_compute_network.tomorrow_network.id
 }
 
+# setting firewall rule for ssh access
+resource "google_compute_firewall" "allow_ssh" {
+  name = "allow-ssh"
+  network = google_compute_network.tomorrow_network.id
+
+  # allowing tcp traffic on port 22
+  allow {
+    protocol = "tcp"
+    ports = ["22"]
+  }
+
+  # allowing all ip addresses
+  source_ranges = ["0.0.0.0/0"]
+
+  # setting target tags
+  target_tags = ["frontend", "backend", "db"]
+}
+
 # setting firewall rule for http traffic to the frontend
 resource "google_compute_firewall" "allow_http_frontend" {
   name = "allow-http-frontend"
@@ -138,7 +156,7 @@ resource "google_compute_instance" "svelte_frontend" {
   depends_on = [google_compute_network.tomorrow_network, google_compute_subnetwork.tomorrow_subnetwork]
 }
 
-# google compute instance for spring
+# google compute instance for spring backend
 resource "google_compute_instance" "spring_backend" {
   name         = "spring-backend"
   machine_type = var.machine_type
@@ -181,6 +199,9 @@ resource "google_compute_instance" "spring_backend" {
     usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
     echo "Startup script completed successfully" >> /var/log/startup-script.log
   EOT
+
+  # setting backend tag for network rule purpose
+  tags = ["backend"]
 
   # adding labels
   labels = {
@@ -235,6 +256,9 @@ resource "google_compute_instance" "postgresql_db" {
     usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
     echo "Startup script completed successfully" >> /var/log/startup-script.log
   EOT
+
+  # setting db tag for network rule purpose
+  tags = ["db"]
 
   # adding labels
   labels = {
