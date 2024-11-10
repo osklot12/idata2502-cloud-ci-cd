@@ -110,6 +110,25 @@ resource "google_compute_firewall" "allow_http_frontend" {
   target_tags = ["frontend"]
 }
 
+# setting firewall rule for http traffic to the backend
+resource "google_compute_firewall" "allow_http_backend" {
+  name = "allow-http-backend"
+  network = google_compute_network.tomorrow_network.id
+
+  # allowing tcp traffic on port 8080
+  allow {
+    protocol = "tcp"
+    ports = ["8080"]
+  }
+
+  # allowing all ip addresses
+  source_ranges = ["0.0.0.0/0"]
+
+  # setting target tags
+  target_tags = ["backend"]
+}
+
+
 # google compute instance for frontend
 resource "google_compute_instance" "svelte_frontend" {
   name         = "svelte-frontend"
