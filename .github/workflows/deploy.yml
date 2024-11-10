@@ -58,7 +58,7 @@ jobs:
       # Output Frontend IP as an environment variable
       - name: Output Frontend Public IP
         run: |
-          FRONTEND_IP=$(terraform output -raw frontend_public_ip)
+          FRONTEND_IP=$(terraform output -raw frontend_instance_ip)
           echo "FRONTEND_EXT_URL=http://$FRONTEND_IP" >> $GITHUB_ENV
         working-directory: infrastructure/iac/terraform/
 
