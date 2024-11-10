@@ -34,6 +34,11 @@ jobs:
         with:
           terraform_version: 1.4.5
 
+      # refreshing before preceding with any command
+      - name: Terraform Refresh
+        run: terraform refresh
+        working-directory: infrastructure/iac/terraform/
+
       # terraform init
       - name: Terraform Init
         run: terraform init
