@@ -128,6 +128,21 @@ resource "google_compute_firewall" "allow_http_backend" {
   target_tags = ["backend"]
 }
 
+# allowing internal db communication
+resource "google_compute_firewall" "allow_db_internal" {
+  name = "allow-db-internal"
+  network = google_compute_network.tomorrow_network.id
+
+  # allowing tcp traffic on port 5432
+  allow {
+    protocol = "tcp"
+    ports = ["5432"]
+  }
+
+  # setting source and target tags
+  source_tags = ["backend"]
+  target_tags = ["db"]
+}
 
 # google compute instance for frontend
 resource "google_compute_instance" "svelte_frontend" {
