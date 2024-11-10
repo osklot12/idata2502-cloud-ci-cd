@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - gitactions
 
 jobs:
   build-and-push-containers:
