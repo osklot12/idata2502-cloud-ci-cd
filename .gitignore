@@ -16,4 +16,14 @@ backend/*.iml
 backend/.project
 backend/*.log
 
+# terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*.tfvars
+terraform/crash.log
+terraform/*.tfplan
+terraform/.terraform.lock.hcl
 
+# secrets
+.secrets
