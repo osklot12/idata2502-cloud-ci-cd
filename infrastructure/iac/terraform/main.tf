@@ -56,6 +56,9 @@ variable "subnet_cidr" {
 # keeping the retrieval of ssh key content centralized
 locals {
   public_ssh_key_content = file("${path.module}/${var.public_ssh_key_path}")
+  frontend_startup_script = file("${path.module}/scripts/frontend-startup-script.sh")
+  backend_startup_script = file("${path.module}/scripts/backend-startup-script.sh")
+  db_startup_script = file("${path.module}/scripts/db-startup-script.sh")
 }
 
 # creating a dedicated network for the application
@@ -140,16 +143,7 @@ resource "google_compute_instance" "svelte_frontend" {
   }
 
   # setting up environment
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    set -e
-    apt-get update || { echo "Failed to update packages"; exit 1; }
-    apt-get install -y docker.io || { echo "Failed to install Docker"; exit 1; }
-    systemctl enable docker || { echo "Failed to enable Docker"; exit 1; }
-    systemctl start docker || { echo "Failed to start Docker"; exit 1; }
-    usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
-    echo "Startup script completed successfully" >> /var/log/startup-script.log
-  EOT
+  metadata_startup_script = local.frontend_startup_script
 
   # setting frontend tag for network rule purpose
   tags = ["frontend"]
@@ -197,16 +191,7 @@ resource "google_compute_instance" "spring_backend" {
   }
 
   # setting up environment
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    set -e
-    apt-get update || { echo "Failed to update packages"; exit 1; }
-    apt-get install -y docker.io || { echo "Failed to install Docker"; exit 1; }
-    systemctl enable docker || { echo "Failed to enable Docker"; exit 1; }
-    systemctl start docker || { echo "Failed to start Docker"; exit 1; }
-    usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
-    echo "Startup script completed successfully" >> /var/log/startup-script.log
-  EOT
+  metadata_startup_script = local.backend_startup_script
 
   # setting backend tag for network rule purpose
   tags = ["backend"]
@@ -254,16 +239,7 @@ resource "google_compute_instance" "postgresql_db" {
   }
 
   # setting up environment
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    set -e
-    apt-get update || { echo "Failed to update packages"; exit 1; }
-    apt-get install -y docker.io || { echo "Failed to install Docker"; exit 1; }
-    systemctl enable docker || { echo "Failed to enable Docker"; exit 1; }
-    systemctl start docker || { echo "Failed to start Docker"; exit 1; }
-    usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
-    echo "Startup script completed successfully" >> /var/log/startup-script.log
-  EOT
+  metadata_startup_script = local.db_startup_script
 
   # setting db tag for network rule purpose
   tags = ["db"]
