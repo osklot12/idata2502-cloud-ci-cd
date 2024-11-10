@@ -20,10 +20,9 @@ public class CorsConfig {
        return new WebMvcConfigurer() {
            @Override
            public void addCorsMappings(CorsRegistry reg) {
-               String frontendUrl = env.getProperty("FRONTEND_IP");
-               if (frontendUrl != null) {
-                   frontendUrl = "http://" + frontendUrl;
-               } else {
+               String frontendUrl = env.getProperty("FRONTEND_EXT_URL");
+               // fallback for local testing
+               if (frontendUrl == null) {
                    frontendUrl = "http://localhost";
                }
 
