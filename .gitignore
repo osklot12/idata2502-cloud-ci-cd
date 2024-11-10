@@ -23,9 +23,9 @@ backend/*.log
 
 # terraform
 infrastructure/iac/terraform/.terraform/
-terraform/*.tfstate
-terraform/*.tfstate.*
-terraform/*.tfvars
-terraform/crash.log
-terraform/*.tfplan
+infrastructure/iac/terraform/*.tfstate
+infrastructure/iac/terraform/*.tfstate.*
+infrastructure/iac/terraform/*.tfvars
+infrastructure/iac/terraform/crash.log
+infrastructure/iac/terraform/*.tfplan
 infrastructure/iac/terraform/.terraform.lock.hcl
