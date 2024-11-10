@@ -39,10 +39,6 @@ jobs:
         run: terraform init
         working-directory: infrastructure/iac/terraform/
 
-      - name: Import Existing Resources
-        run: |
-          terraform import google_compute_network.tomorrow_network projects/idata2502-ci-cd/global/networks/tomorrow-app-network || true
-
       # refreshing before preceding with any command
       - name: Terraform Refresh
         run: terraform refresh
