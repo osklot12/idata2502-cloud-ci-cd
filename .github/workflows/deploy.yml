@@ -1,21 +1,66 @@
-name: Deploy Application
+name: Deploy Infrastructure and Application
 
 on:
   workflow_run:
     workflows:
       - Build and Push Containers
-      - Deploy Infrastructure
     types:
       - completed
 
 jobs:
-  deploy-app:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       # checkout code
       - name: Checkout code
         uses: actions/checkout@v3
+
+      # authenticate with google cloud using the service account json key
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # set up google cloud sdk
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: "latest"
+          project_id: "idata2502-ci-cd"
+
+      # set up terraform cli
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.5
+
+      # terraform init
+      - name: Terraform Init
+        run: terraform init
+        working-directory: infrastructure/iac/terraform/
+
+      # refreshing before preceding with any command
+      - name: Terraform Refresh
+        run: terraform refresh
+        working-directory: infrastructure/iac/terraform/
+
+      # terraform plan
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: infrastructure/iac/terraform/
+
+      # terraform apply with conditional approval
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+        working-directory: infrastructure/iac/terraform/
+
+      # Output Frontend IP as an environment variable
+      - name: Output Frontend Public IP
+        run: |
+          FRONTEND_IP=$(terraform output -raw frontend_public_ip)
+          echo "FRONTEND_EXT_URL=http://$FRONTEND_IP" >> $GITHUB_ENV
+        working-directory: infrastructure/iac/terraform/
 
       # set up ssh key for gce access
       - name: Set up SSH key
@@ -26,20 +71,7 @@ jobs:
           chmod 600 ~/.ssh/google_compute_engine
           chmod 600 ~/.ssh/google_compute_engine.pub
 
-      # authenticate with Google Cloud using google-github-actions/auth
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-      # Set up Cloud SDK
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          version: 'latest'
-          project_id: 'idata2502-ci-cd'
-
-      # Deploy Svelte frontend using SSH
+      # deploy svelte frontend using ssh
       - name: Deploy Svelte Frontend Container to GCE
         run: |
           set -e
@@ -57,7 +89,7 @@ jobs:
           docker logs svelte-frontend
           "
 
-      # Deploy Spring Boot backend using SSH
+      # deploy spring boot backend using ssh
       - name: Deploy Spring Boot Backend Container to GCE
         run: |
           set -e
@@ -65,7 +97,9 @@ jobs:
           docker pull osklot12/spring-backend:latest &&
           docker stop spring-backend || true &&
           docker rm spring-backend || true &&
-          docker run -d -p 8080:8080 --name spring-backend osklot12/spring-backend:latest
+          docker run -d -p 8080:8080 --name spring-backend  \
+            -e FRONTEND_EXT_URL=$FRONTEND_EXTERNAL_URL \
+            osklot12/spring-backend:latest
           "
 
       # verify spring backend app deployment
@@ -74,3 +108,4 @@ jobs:
           gcloud compute ssh debian@spring-backend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
           docker logs spring-backend
           "
+          
