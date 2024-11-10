@@ -4,6 +4,14 @@ provider "google" {
   region  = "europe-north1"
 }
 
+# setting backend for state management
+terraform {
+  backend "gcs" {
+    bucket = "tomorrow-terraform-bucket"
+    prefix = "terraform/state"
+  }
+}
+
 # setting variables
 variable "machine_type" {
   description = "Machine type for the instances"
