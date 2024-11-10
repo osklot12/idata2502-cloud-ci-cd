@@ -57,7 +57,7 @@ jobs:
       # output infrastructure information as an artifact
       - name: Output Frontend IP
         run: |
-          echo "FRONTEND_IP=$(terraform output -raw frontend_instance_ip)" > frontend_ip.txt
+          echo "FRONTEND_IP=$(terraform output -raw frontend_instance_ip)" > ../frontend_ip.txt
         working-directory: infrastructure/iac/terraform/
 
       # upload artifact for other workflows to use
@@ -65,4 +65,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: frontend-ip
-          path: frontend_ip.txt
+          path: infrastructure/iac/frontend_ip.txt
