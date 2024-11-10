@@ -56,6 +56,8 @@ variable "subnet_cidr" {
 # keeping the retrieval of ssh key content centralized
 locals {
   public_ssh_key_content = file("${path.module}/${var.public_ssh_key_path}")
+  docker_install_script = file("${path.module}/scripts/install-docker.sh")
+  postgres_install_script = file("${path.module}/scripts/install-postgres.sh")
 }
 
 # creating a dedicated network for the application
@@ -140,16 +142,7 @@ resource "google_compute_instance" "svelte_frontend" {
   }
 
   # setting up environment
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    set -e
-    apt-get update || { echo "Failed to update packages"; exit 1; }
-    apt-get install -y docker.io || { echo "Failed to install Docker"; exit 1; }
-    systemctl enable docker || { echo "Failed to enable Docker"; exit 1; }
-    systemctl start docker || { echo "Failed to start Docker"; exit 1; }
-    usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
-    echo "Startup script completed successfully" >> /var/log/startup-script.log
-  EOT
+  metadata_startup_script = local.docker_install_script
 
   # setting frontend tag for network rule purpose
   tags = ["frontend"]
@@ -197,16 +190,7 @@ resource "google_compute_instance" "spring_backend" {
   }
 
   # setting up environment
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    set -e
-    apt-get update || { echo "Failed to update packages"; exit 1; }
-    apt-get install -y docker.io || { echo "Failed to install Docker"; exit 1; }
-    systemctl enable docker || { echo "Failed to enable Docker"; exit 1; }
-    systemctl start docker || { echo "Failed to start Docker"; exit 1; }
-    usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
-    echo "Startup script completed successfully" >> /var/log/startup-script.log
-  EOT
+  metadata_startup_script = local.docker_install_script
 
   # setting backend tag for network rule purpose
   tags = ["backend"]
@@ -254,16 +238,7 @@ resource "google_compute_instance" "postgresql_db" {
   }
 
   # setting up environment
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    set -e
-    apt-get update || { echo "Failed to update packages"; exit 1; }
-    apt-get install -y docker.io || { echo "Failed to install Docker"; exit 1; }
-    systemctl enable docker || { echo "Failed to enable Docker"; exit 1; }
-    systemctl start docker || { echo "Failed to start Docker"; exit 1; }
-    usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
-    echo "Startup script completed successfully" >> /var/log/startup-script.log
-  EOT
+  metadata_startup_script = local.postgres_install_script
 
   # setting db tag for network rule purpose
   tags = ["db"]
