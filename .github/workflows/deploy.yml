@@ -90,7 +90,9 @@ jobs:
           docker pull osklot12/spring-backend:latest &&
           docker stop spring-backend || true &&
           docker rm spring-backend || true &&
-          docker run -d -p 8080:8080 --name spring-backend osklot12/spring-backend:latest
+          docker run -d -p 8080:8080 --name spring-backend \
+            -e SPRING_PROFILES_ACTIVE=prod \
+            osklot12/spring-backend:latest
           "
 
       # verify spring backend app deployment
