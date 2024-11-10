@@ -58,19 +58,10 @@ jobs:
       # output infrastructure information as an artifact
       - name: Output Frontend IP
         run: |
-          echo "FRONTEND_IP=$(terraform output -raw frontend_instance_ip)" > ../frontend_ip.txt
+          echo "$(terraform output -raw frontend_instance_ip)" > ../frontend_ip.txt
         working-directory: infrastructure/iac/terraform/
 
-      # upload artifact for other workflows to use
-      - name: Upload Frontend IP Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: frontend-ip
-          path: infrastructure/iac/frontend_ip.txt
-
-      # download ip artifact
-      - name: Download IP Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: frontend-ip
-          path: infrastructure/iac/
+      # uploading frontend ip to gcs
+      - name: Upload Frontend IP to GCS
+        run: |
+          gsutil cp infrastructure/iac/frontend_ip.txt gs://your-gcs-bucket-name/frontend_ip.txt
