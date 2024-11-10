@@ -13,7 +13,7 @@ echo "host all all 0.0.0.0/0 md5" | tee -a /etc/postgresql/*/main/pg_hba.conf
 
 # start and enable postgresql service
 systemctl enable postgresql
-systemctl start postgresql
+systemctl restart postgresql
 
 # create database and user
 sudo -u postgres psql -c "CREATE DATABASE tomorrow_db;"
