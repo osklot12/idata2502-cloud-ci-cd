@@ -57,12 +57,6 @@ jobs:
           docker logs svelte-frontend
           "
 
-      # download the frontend ip from gcs
-      - name: Download Frontend IP from GCS
-        run: |
-          gsutil cp gs://tomorrow-terraform-bucket/frontend_ip.txt infrastructure/iac/frontend_ip.txt
-          echo "FRONTEND_IP=$(cat infrastructure/iac/frontend_ip.txt)" >> $GITHUB_ENV
-
       # Deploy Spring Boot backend using SSH
       - name: Deploy Spring Boot Backend Container to GCE
         run: |
@@ -71,9 +65,7 @@ jobs:
           docker pull osklot12/spring-backend:latest &&
           docker stop spring-backend || true &&
           docker rm spring-backend || true &&
-          docker run -d -p 8080:8080 --name spring-backend \
-            -e FRONTEND_IP=$FRONTEND_IP \
-            osklot12/spring-backend:latest
+          docker run -d -p 8080:8080 --name spring-backend osklot12/spring-backend:latest
           "
 
       # verify spring backend app deployment

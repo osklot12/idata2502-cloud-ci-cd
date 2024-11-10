@@ -54,14 +54,3 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
         working-directory: infrastructure/iac/terraform/
-
-      # output infrastructure information as an artifact
-      - name: Output Frontend IP
-        run: |
-          echo "$(terraform output -raw frontend_instance_ip)" > ../frontend_ip.txt
-        working-directory: infrastructure/iac/terraform/
-
-      # uploading frontend ip to gcs
-      - name: Upload Frontend IP to GCS
-        run: |
-          gsutil cp infrastructure/iac/frontend_ip.txt gs://tomorrow-terraform-bucket/frontend_ip.txt
