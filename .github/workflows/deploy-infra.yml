@@ -67,3 +67,10 @@ jobs:
         with:
           name: frontend-ip
           path: infrastructure/iac/frontend_ip.txt
+
+      # download ip artifact
+      - name: Download IP Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-ip
+          path: infrastructure/iac/
