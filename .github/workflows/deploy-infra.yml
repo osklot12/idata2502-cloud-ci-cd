@@ -1,0 +1,55 @@
+name: Deploy Infrastructure
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+
+    steps:
+      # checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # authenticate with Google cloud using the service account JSON key
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # set up Google cloud sdk
+      - name: set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: "latest"
+          project_id: "idata2502-ci-cd"
+
+      # set up terraform cli
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.5
+
+      # terraform init
+      - name: Terraform Init
+        run: terraform init
+
+      # terraform apply with conditional approval
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+
+      # output infrastructure information as an artifact
+      - name: Output Frontend IP
+        run: |
+          echo "FRONTEND_IP=$(terraform output -raw frontend_instance_ip)" > frontend_ip.txt
+
+      # upload artifact for other workflows to use
+      - name: Upload Frontend IP Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-ip
+          path: frontend_ip.txt
