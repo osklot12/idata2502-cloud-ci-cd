@@ -68,7 +68,7 @@ jobs:
       - name: Deploy Svelte Frontend Container to GCE
         run: |
           set -e
-          gcloud compute ssh debian@svelte-frontend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
+          gcloud compute ssh -vvv -i debian@svelte-frontend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
           docker pull osklot12/svelte-frontend:latest &&
           docker stop svelte-frontend || true &&
           docker rm svelte-frontend || true &&
