@@ -224,7 +224,6 @@ resource "google_compute_instance" "postgresql_db" {
   network_interface {
     network = google_compute_network.tomorrow_network.id
     subnetwork = google_compute_subnetwork.tomorrow_subnetwork.id
-    access_config {}
   }
 
   # using the terraform service account
