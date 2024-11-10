@@ -63,7 +63,7 @@ jobs:
     needs: build-app
 
     steps:
-      - # checkout the code
+      # checkout the code
       - name: Checkout code
       - uses: actions/checkout@v3
 
