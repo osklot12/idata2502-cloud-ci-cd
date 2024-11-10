@@ -1,0 +1,1 @@
+# IDATA2502 - CI/CD cloud management with Google Cloud
