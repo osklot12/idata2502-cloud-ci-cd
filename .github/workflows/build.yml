@@ -65,7 +65,7 @@ jobs:
     steps:
       # checkout the code
       - name: Checkout code
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       # log in to docker hub
       - name: Log in to Docker Hub
