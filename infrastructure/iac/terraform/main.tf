@@ -56,8 +56,9 @@ variable "subnet_cidr" {
 # keeping the retrieval of ssh key content centralized
 locals {
   public_ssh_key_content = file("${path.module}/${var.public_ssh_key_path}")
-  docker_install_script = file("${path.module}/scripts/install-docker.sh")
-  postgres_install_script = file("${path.module}/scripts/install-postgres.sh")
+  frontend_startup_script = file("${path.module}/scripts/frontend-startup-script.sh")
+  backend_startup_script = file("${path.module}/scripts/backend-startup-script.sh")
+  db_startup_script = file("${path.module}/scripts/db-startup-script.sh")
 }
 
 # creating a dedicated network for the application
@@ -142,7 +143,7 @@ resource "google_compute_instance" "svelte_frontend" {
   }
 
   # setting up environment
-  metadata_startup_script = local.docker_install_script
+  metadata_startup_script = local.frontend_startup_script
 
   # setting frontend tag for network rule purpose
   tags = ["frontend"]
@@ -190,7 +191,7 @@ resource "google_compute_instance" "spring_backend" {
   }
 
   # setting up environment
-  metadata_startup_script = local.docker_install_script
+  metadata_startup_script = local.backend_startup_script
 
   # setting backend tag for network rule purpose
   tags = ["backend"]
@@ -238,7 +239,7 @@ resource "google_compute_instance" "postgresql_db" {
   }
 
   # setting up environment
-  metadata_startup_script = local.postgres_install_script
+  metadata_startup_script = local.db_startup_script
 
   # setting db tag for network rule purpose
   tags = ["db"]
