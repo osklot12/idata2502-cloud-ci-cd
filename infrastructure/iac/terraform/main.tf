@@ -281,8 +281,3 @@ output "frontend_instance_ip" {
 output "backend_instance_ip" {
   value = google_compute_instance.spring_backend.network_interface[0].access_config[0].nat_ip
 }
-
-# outputting the postgresql db instance ip
-output "database_instance_ip" {
-  value = google_compute_instance.postgresql_db.network_interface[0].access_config[0].nat_ip
-}
