@@ -22,10 +22,10 @@ backend/.project
 backend/*.log
 
 # terraform
-terraform/.terraform/
+infrastructure/iac/terraform/.terraform/
 terraform/*.tfstate
 terraform/*.tfstate.*
 terraform/*.tfvars
 terraform/crash.log
 terraform/*.tfplan
-terraform/.terraform.lock.hcl
+infrastructure/iac/terraform/.terraform.lock.hcl

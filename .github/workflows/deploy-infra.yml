@@ -37,19 +37,23 @@ jobs:
       # terraform init
       - name: Terraform Init
         run: terraform init
+        working-directory: infrastructure/iac/terraform/
 
       # terraform plan
       - name: Terraform Plan
         run: terraform plan -out=tfplan
+        working-directory: infrastructure/iac/terraform/
 
       # terraform apply with conditional approval
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
+        working-directory: infrastructure/iac/terraform/
 
       # output infrastructure information as an artifact
       - name: Output Frontend IP
         run: |
           echo "FRONTEND_IP=$(terraform output -raw frontend_instance_ip)" > frontend_ip.txt
+        working-directory: infrastructure/iac/terraform/
 
       # upload artifact for other workflows to use
       - name: Upload Frontend IP Artifact
