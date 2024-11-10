@@ -38,6 +38,10 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      # terraform plan
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
       # terraform apply with conditional approval
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
