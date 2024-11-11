@@ -91,7 +91,7 @@ jobs:
       # running ansible playbook with gcp plugin
       - name: Run Ansible Playbook with GCP Plugin
         run: |
-          ansible-playbook -i infrastructure/ansible/inventories/gcp_compute.yml infrastructure/ansible/playbooks/site.yml \
+          ansible-playbook -vvv -i infrastructure/ansible/inventories/gcp_compute.yml infrastructure/ansible/playbooks/site.yml \
           --private-key ~/.ssh/google_compute_engine
 
       # deploy svelte frontend using ssh
