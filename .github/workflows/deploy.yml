@@ -54,7 +54,6 @@ jobs:
         run: |
           echo "public_ssh_key_content = \"${{ secrets.GCE_SSH_PUBLIC_KEY }}\"" > terraform.tfvars
 
-
       # refreshing before preceding with any command
       - name: Terraform Refresh
         run: terraform refresh
@@ -69,6 +68,12 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
         working-directory: infrastructure/iac/terraform/
+
+      # installing python dependencies for ansible
+      - name: Install Python dependencies for Ansible
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install google-auth
 
       # setting up ansible
       - name: Set up Ansible and dependencies
