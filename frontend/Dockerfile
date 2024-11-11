@@ -1,4 +1,5 @@
-FROM node:18
+# build the svelte app
+FROM node:18 AS builder
 
 # set the working directory
 WORKDIR /app
@@ -15,11 +16,14 @@ COPY . .
 # build the svelte app for production
 RUN npm run build
 
-# install 'serve' to serve static files
-RUN npm install -g serve
+# serve with nginx
+FROM nginx:alpine
 
-# expose port
+# copy the build output to the nginx html folder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# expose port 80
 EXPOSE 80
 
-# run the app
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# start nginx server
+CMD ["nginx", "-g", "daemon off;"]
