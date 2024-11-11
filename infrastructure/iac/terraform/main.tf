@@ -43,19 +43,14 @@ variable "service_account_scope" {
   default = "https://www.googleapis.com/auth/cloud-platform"
 }
 
-variable "public_ssh_key_path" {
-  description = "Path of the public SSH key for instances"
-  default = "../../../.ssh/google_compute_engine.pub"
-}
-
 variable "subnet_cidr" {
   description = "CIDR range for the subnet"
   default = "10.0.0.0/24"
 }
 
-# keeping the retrieval of ssh key content centralized
-locals {
-  public_ssh_key_content = file("${path.module}/${var.public_ssh_key_path}")
+variable "public_ssh_key_content" {
+  description = "Public SSH key content"
+  default = ""
 }
 
 # creating a dedicated network for the application
@@ -170,7 +165,7 @@ resource "google_compute_instance" "svelte_frontend" {
 
   # setting up public ssh key
   metadata = {
-    ssh-keys = "debian:${local.public_ssh_key_content}"
+    ssh-keys = "debian:${var.public_ssh_key_content}"
   }
 
   # setting frontend tag for network rule purpose
@@ -215,7 +210,7 @@ resource "google_compute_instance" "spring_backend" {
 
   # setting up public ssh key
   metadata = {
-    ssh-keys = "debian:${local.public_ssh_key_content}"
+    ssh-keys = "debian:${var.public_ssh_key_content}"
   }
 
   # setting backend tag for network rule purpose
@@ -259,7 +254,7 @@ resource "google_compute_instance" "postgresql_db" {
 
   # setting up public ssh key
   metadata = {
-    ssh-keys = "debian:${local.public_ssh_key_content}"  # Public key for the 'debian' user
+    ssh-keys = "debian:${var.public_ssh_key_content}"
   }
 
   # setting db tag for network rule purpose

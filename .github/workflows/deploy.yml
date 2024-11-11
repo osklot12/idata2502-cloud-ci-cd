@@ -49,6 +49,12 @@ jobs:
         run: terraform init
         working-directory: infrastructure/iac/terraform/
 
+      # setting terraform variables
+      - name: Set Terraform Variables
+        run: |
+          echo "public_ssh_key_content = \"${{ secrets.GCE_SSH_PUBLIC_KEY }}\"" > terraform.tfvars
+
+
       # refreshing before preceding with any command
       - name: Terraform Refresh
         run: terraform refresh
