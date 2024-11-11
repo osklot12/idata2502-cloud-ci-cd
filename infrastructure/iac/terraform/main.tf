@@ -56,9 +56,6 @@ variable "subnet_cidr" {
 # keeping the retrieval of ssh key content centralized
 locals {
   public_ssh_key_content = file("${path.module}/${var.public_ssh_key_path}")
-  frontend_startup_script = file("${path.module}/scripts/frontend-startup-script.sh")
-  backend_startup_script = file("${path.module}/scripts/backend-startup-script.sh")
-  db_startup_script = file("${path.module}/scripts/db-startup-script.sh")
 }
 
 # creating a dedicated network for the application
@@ -176,9 +173,6 @@ resource "google_compute_instance" "svelte_frontend" {
     ssh-keys = "debian:${local.public_ssh_key_content}"
   }
 
-  # setting up environment
-  metadata_startup_script = local.frontend_startup_script
-
   # setting frontend tag for network rule purpose
   tags = ["frontend"]
 
@@ -224,9 +218,6 @@ resource "google_compute_instance" "spring_backend" {
     ssh-keys = "debian:${local.public_ssh_key_content}"
   }
 
-  # setting up environment
-  metadata_startup_script = local.backend_startup_script
-
   # setting backend tag for network rule purpose
   tags = ["backend"]
 
@@ -270,9 +261,6 @@ resource "google_compute_instance" "postgresql_db" {
   metadata = {
     ssh-keys = "debian:${local.public_ssh_key_content}"  # Public key for the 'debian' user
   }
-
-  # setting up environment
-  metadata_startup_script = local.db_startup_script
 
   # setting db tag for network rule purpose
   tags = ["db"]
