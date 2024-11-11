@@ -43,19 +43,14 @@ variable "service_account_scope" {
   default = "https://www.googleapis.com/auth/cloud-platform"
 }
 
-variable "public_ssh_key_path" {
-  description = "Path of the public SSH key for instances"
-  default = "../../../.ssh/github_actions_key.pub"
-}
-
 variable "subnet_cidr" {
   description = "CIDR range for the subnet"
   default = "10.0.0.0/24"
 }
 
-# keeping the retrieval of ssh key content centralized
-locals {
-  public_ssh_key_content = file("${path.module}/${var.public_ssh_key_path}")
+variable "public_ssh_key_content" {
+  description = "Public SSH key content"
+  default = ""
 }
 
 # creating a dedicated network for the application
@@ -107,6 +102,40 @@ resource "google_compute_firewall" "allow_http_frontend" {
   target_tags = ["frontend"]
 }
 
+# setting firewall rule for http traffic to the backend
+resource "google_compute_firewall" "allow_http_backend" {
+  name = "allow-http-backend"
+  network = google_compute_network.tomorrow_network.id
+
+  # allowing tcp traffic on port 8080
+  allow {
+    protocol = "tcp"
+    ports = ["8080"]
+  }
+
+  # allowing all ip addresses
+  source_ranges = ["0.0.0.0/0"]
+
+  # setting target tags
+  target_tags = ["backend"]
+}
+
+# allowing internal db communication
+resource "google_compute_firewall" "allow_db_internal" {
+  name = "allow-db-internal"
+  network = google_compute_network.tomorrow_network.id
+
+  # allowing tcp traffic on port 5432
+  allow {
+    protocol = "tcp"
+    ports = ["5432"]
+  }
+
+  # setting source and target tags
+  source_tags = ["backend"]
+  target_tags = ["db"]
+}
+
 # google compute instance for frontend
 resource "google_compute_instance" "svelte_frontend" {
   name         = "svelte-frontend"
@@ -136,20 +165,8 @@ resource "google_compute_instance" "svelte_frontend" {
 
   # setting up public ssh key
   metadata = {
-    ssh-keys = "debian:${local.public_ssh_key_content}"
+    ssh-keys = "debian:${var.public_ssh_key_content}"
   }
-
-  # setting up environment
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    set -e
-    apt-get update || { echo "Failed to update packages"; exit 1; }
-    apt-get install -y docker.io || { echo "Failed to install Docker"; exit 1; }
-    systemctl enable docker || { echo "Failed to enable Docker"; exit 1; }
-    systemctl start docker || { echo "Failed to start Docker"; exit 1; }
-    usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
-    echo "Startup script completed successfully" >> /var/log/startup-script.log
-  EOT
 
   # setting frontend tag for network rule purpose
   tags = ["frontend"]
@@ -193,20 +210,8 @@ resource "google_compute_instance" "spring_backend" {
 
   # setting up public ssh key
   metadata = {
-    ssh-keys = "debian:${local.public_ssh_key_content}"
+    ssh-keys = "debian:${var.public_ssh_key_content}"
   }
-
-  # setting up environment
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    set -e
-    apt-get update || { echo "Failed to update packages"; exit 1; }
-    apt-get install -y docker.io || { echo "Failed to install Docker"; exit 1; }
-    systemctl enable docker || { echo "Failed to enable Docker"; exit 1; }
-    systemctl start docker || { echo "Failed to start Docker"; exit 1; }
-    usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
-    echo "Startup script completed successfully" >> /var/log/startup-script.log
-  EOT
 
   # setting backend tag for network rule purpose
   tags = ["backend"]
@@ -239,7 +244,6 @@ resource "google_compute_instance" "postgresql_db" {
   network_interface {
     network = google_compute_network.tomorrow_network.id
     subnetwork = google_compute_subnetwork.tomorrow_subnetwork.id
-    access_config {}
   }
 
   # using the terraform service account
@@ -250,20 +254,8 @@ resource "google_compute_instance" "postgresql_db" {
 
   # setting up public ssh key
   metadata = {
-    ssh-keys = "debian:${local.public_ssh_key_content}"  # Public key for the 'debian' user
+    ssh-keys = "debian:${var.public_ssh_key_content}"
   }
-
-  # setting up environment
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    set -e
-    apt-get update || { echo "Failed to update packages"; exit 1; }
-    apt-get install -y docker.io || { echo "Failed to install Docker"; exit 1; }
-    systemctl enable docker || { echo "Failed to enable Docker"; exit 1; }
-    systemctl start docker || { echo "Failed to start Docker"; exit 1; }
-    usermod -aG docker debian || { echo "Failed to add user to Docker group"; exit 1; }
-    echo "Startup script completed successfully" >> /var/log/startup-script.log
-  EOT
 
   # setting db tag for network rule purpose
   tags = ["db"]
@@ -286,9 +278,4 @@ output "frontend_instance_ip" {
 # outputting the spring backend instance ip
 output "backend_instance_ip" {
   value = google_compute_instance.spring_backend.network_interface[0].access_config[0].nat_ip
-}
-
-# outputting the postgresql db instance ip
-output "database_instance_ip" {
-  value = google_compute_instance.postgresql_db.network_interface[0].access_config[0].nat_ip
 }

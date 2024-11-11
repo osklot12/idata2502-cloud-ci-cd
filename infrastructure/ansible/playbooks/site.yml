@@ -1,0 +1,11 @@
+- hosts: frontend
+  roles:
+    - docker
+
+- hosts: backend
+  roles:
+    - docker
+
+- hosts: db
+  roles:
+    - postgresql
