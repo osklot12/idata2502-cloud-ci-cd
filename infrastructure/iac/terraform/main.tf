@@ -45,7 +45,7 @@ variable "service_account_scope" {
 
 variable "public_ssh_key_path" {
   description = "Path of the public SSH key for instances"
-  default = "../../../.ssh/github_actions_key.pub"
+  default = "../../../.ssh/google_compute_engine.pub"
 }
 
 variable "subnet_cidr" {
