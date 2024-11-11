@@ -12,8 +12,9 @@ sed -i "s/^#listen_addresses = 'localhost'/listen_addresses = '*'/" /etc/postgre
 echo "host all all 0.0.0.0/0 md5" | tee -a /etc/postgresql/*/main/pg_hba.conf
 
 # start and enable postgresql service
-systemctl enable postgresql
-systemctl restart postgresql
+systemctl enable postgresql || { echo "Failed to enable PostgreSQL service"; exit 1; }
+systemctl start postgresql || { echo "Failed to start PostgreSQL service"; exit 1; }
+systemctl restart postgresql || { echo "Failed to restart PostgreSQL service"; exit 1; }
 
 # create database and user
 sudo -u postgres psql -c "CREATE DATABASE tomorrow_db;"
