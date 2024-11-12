@@ -86,7 +86,7 @@ resource "google_compute_firewall" "allow_ssh" {
   source_ranges = ["0.0.0.0/0"]
 
   # setting target tags
-  target_tags = ["frontend", "backend", "db"]
+  target_tags = ["tomorrow-server"]
 }
 
 # setting firewall rule for http traffic to the frontend
@@ -104,7 +104,7 @@ resource "google_compute_firewall" "allow_http_frontend" {
   source_ranges = ["0.0.0.0/0"]
 
   # setting target tags
-  target_tags = ["frontend"]
+  target_tags = ["tomorrow-server"]
 }
 
 # setting firewall rule for http traffic to the backend
@@ -122,28 +122,12 @@ resource "google_compute_firewall" "allow_http_backend" {
   source_ranges = ["0.0.0.0/0"]
 
   # setting target tags
-  target_tags = ["backend"]
+  target_tags = ["tomorrow-server"]
 }
 
-# allowing internal db communication
-resource "google_compute_firewall" "allow_db_internal" {
-  name = "allow-db-internal"
-  network = google_compute_network.tomorrow_network.id
-
-  # allowing tcp traffic on port 5432
-  allow {
-    protocol = "tcp"
-    ports = ["5432"]
-  }
-
-  # setting source and target tags
-  source_tags = ["backend"]
-  target_tags = ["db"]
-}
-
-# google compute instance for frontend
-resource "google_compute_instance" "svelte_frontend" {
-  name         = "svelte-frontend"
+# google compute instance
+resource "google_compute_instance" "tomorrow_server" {
+  name         = "tomorrow-server"
   machine_type = var.machine_type
   zone         = var.zone
 
@@ -174,7 +158,7 @@ resource "google_compute_instance" "svelte_frontend" {
   }
 
   # setting frontend tag for network rule purpose
-  tags = ["frontend"]
+  tags = ["tomorrow-server"]
 
   # adding labels
   labels = {
@@ -186,101 +170,7 @@ resource "google_compute_instance" "svelte_frontend" {
   depends_on = [google_compute_network.tomorrow_network, google_compute_subnetwork.tomorrow_subnetwork]
 }
 
-# google compute instance for spring backend
-resource "google_compute_instance" "spring_backend" {
-  name         = "spring-backend"
-  machine_type = var.machine_type
-  zone         = var.zone
-
-  # configuring boot image
-  boot_disk {
-    initialize_params {
-      image = data.google_compute_image.latest_image.self_link
-      size  = 30
-    }
-  }
-
-  # configuring network interface
-  network_interface {
-    network = google_compute_network.tomorrow_network.id
-    subnetwork = google_compute_subnetwork.tomorrow_subnetwork.id
-    access_config {}
-  }
-
-  # using the terraform service account
-  service_account {
-    email = var.service_account_email
-    scopes = [var.service_account_scope]
-  }
-
-  # setting up public ssh key
-  metadata = {
-    ssh-keys = "debian:${var.public_ssh_key_content}"
-  }
-
-  # setting backend tag for network rule purpose
-  tags = ["backend"]
-
-  # adding labels
-  labels = {
-    environment = "development"
-    app = "tomorrow"
-  }
-
-  # declaring dependencies
-  depends_on = [google_compute_network.tomorrow_network, google_compute_subnetwork.tomorrow_subnetwork]
-}
-
-# google compute instance for postgresql db
-resource "google_compute_instance" "postgresql_db" {
-  name         = "postgresql-db"
-  machine_type = var.machine_type
-  zone         = var.zone
-
-  # configuring boot image
-  boot_disk {
-    initialize_params {
-      image = data.google_compute_image.latest_image.self_link
-      size  = 30
-    }
-  }
-
-  # configuring network interface
-  network_interface {
-    network = google_compute_network.tomorrow_network.id
-    subnetwork = google_compute_subnetwork.tomorrow_subnetwork.id
-  }
-
-  # using the terraform service account
-  service_account {
-    email = var.service_account_email
-    scopes = [var.service_account_scope]
-  }
-
-  # setting up public ssh key
-  metadata = {
-    ssh-keys = "debian:${var.public_ssh_key_content}"
-  }
-
-  # setting db tag for network rule purpose
-  tags = ["db"]
-
-  # adding labels
-  labels = {
-    environment = "development"
-    app = "tomorrow"
-  }
-
-  # declaring dependencies
-  depends_on = [google_compute_network.tomorrow_network, google_compute_subnetwork.tomorrow_subnetwork]
-}
-
-# outputting the frontend instance ip
-output "frontend_instance_ip" {
-  value = google_compute_instance.svelte_frontend.network_interface[0].access_config[0].nat_ip
-}
-
-# outputting the spring backend instance ip
-output "backend_instance_ip" {
-  value = google_compute_instance.spring_backend.network_interface[0].access_config[0].nat_ip
+# outputting the isntance ip
+output "tomorrow_server_instance" {
+  value = google_compute_instance.tomorrow_server.network_interface[0].access_config[0].nat_ip
 }
