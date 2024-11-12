@@ -24,12 +24,17 @@ variable "image_family" {
   default = "tomorrow-standard-family"
 }
 
+variable "ssh_username" {
+  description = "The username for the SSH connection"
+  default = "debian"
+}
+
 # defining the image to build
 source "googlecompute" "app_image" {
   project_id   = var.project_id
   zone         = var.zone
   machine_type = var.machine_type
-  ssh_username = "packer"
+  ssh_username = var.ssh_username
   image_name   = "docker-{{timestamp}}"
   source_image_family = var.source_image_family
   image_family = var.image_family
