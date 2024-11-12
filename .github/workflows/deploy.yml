@@ -29,23 +29,6 @@ jobs:
           version: "latest"
           project_id: "idata2502-ci-cd"
 
-      # installing packer
-      - name: Install Packer
-        run: |
-          sudo apt-get update && sudo apt-get install -y packer
-
-      # installing packer plugins
-      - name: Install Packer Plugins
-        run: |
-          packer init packer-config.pkr.hcl
-        working-directory: infrastructure/packer
-
-      # building image with packer
-      - name: Build Image with Packer
-        run: |
-          packer build packer-template.pkr.hcl
-        working-directory: infrastructure/packer
-
       # set up terraform cli
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
