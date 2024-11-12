@@ -1,0 +1,5 @@
+- name: Docker Image
+  hosts: all
+  become: true
+  roles:
+    - docker
