@@ -63,42 +63,4 @@ jobs:
           echo "${{ secrets.GCE_SSH_PUBLIC_KEY }}" > ~/.ssh/google_compute_engine.pub
           chmod 600 ~/.ssh/google_compute_engine
           chmod 600 ~/.ssh/google_compute_engine.pub
-
-      # deploy svelte frontend using ssh
-      - name: Deploy Svelte Frontend Container to GCE
-        run: |
-          set -e
-          gcloud compute ssh debian@svelte-frontend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
-          docker pull osklot12/svelte-frontend:latest &&
-          docker stop svelte-frontend || true &&
-          docker rm svelte-frontend || true &&
-          docker run -d -p 80:3000 --name svelte-frontend osklot12/svelte-frontend:latest
-          "
-
-      # verify svelte frontend pp deployment
-      - name: Verify Svelte Frontend Deployment
-        run: |
-          gcloud compute ssh debian@svelte-frontend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
-          docker logs svelte-frontend
-          "
-
-      # deploy spring boot backend using ssh
-      - name: Deploy Spring Boot Backend Container to GCE
-        run: |
-          set -e
-          gcloud compute ssh debian@spring-backend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
-          docker pull osklot12/spring-backend:latest &&
-          docker stop spring-backend || true &&
-          docker rm spring-backend || true &&
-          docker run -d -p 8080:8080 --name spring-backend \
-            -e SPRING_PROFILES_ACTIVE=prod \
-            osklot12/spring-backend:latest
-          "
-
-      # verify spring backend app deployment
-      - name: Verify Spring Boot Backend Deployment
-        run: |
-          gcloud compute ssh debian@spring-backend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
-          docker logs spring-backend
-          "
           
