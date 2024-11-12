@@ -151,7 +151,7 @@ resource "google_compute_instance" "svelte_frontend" {
   boot_disk {
     initialize_params {
       image = data.google_compute_image.latest_image.self_link
-      size  = 10
+      size  = 30
     }
   }
 
@@ -196,7 +196,7 @@ resource "google_compute_instance" "spring_backend" {
   boot_disk {
     initialize_params {
       image = data.google_compute_image.latest_image.self_link
-      size  = 10
+      size  = 30
     }
   }
 
@@ -241,7 +241,7 @@ resource "google_compute_instance" "postgresql_db" {
   boot_disk {
     initialize_params {
       image = data.google_compute_image.latest_image.self_link
-      size  = 10
+      size  = 30
     }
   }
 
