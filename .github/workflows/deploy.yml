@@ -29,15 +29,6 @@ jobs:
           version: "latest"
           project_id: "idata2502-ci-cd"
 
-      # set up ssh key for gce access
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > ~/.ssh/google_compute_engine
-          echo "${{ secrets.GCE_SSH_PUBLIC_KEY }}" > ~/.ssh/google_compute_engine.pub
-          chmod 600 ~/.ssh/google_compute_engine
-          chmod 600 ~/.ssh/google_compute_engine.pub
-
       # set up terraform cli
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
@@ -48,11 +39,6 @@ jobs:
       - name: Terraform Init
         run: terraform init
         working-directory: infrastructure/iac/terraform/
-
-      # setting terraform variables
-      - name: Set Terraform Variables
-        run: |
-          echo "public_ssh_key_content = \"${{ secrets.GCE_SSH_PUBLIC_KEY }}\"" > terraform.tfvars
 
       # refreshing before preceding with any command
       - name: Terraform Refresh
@@ -69,66 +55,12 @@ jobs:
         run: terraform apply -auto-approve tfplan
         working-directory: infrastructure/iac/terraform/
 
-      # installing python dependencies for ansible
-      - name: Install Python dependencies for Ansible
+      # set up ssh key for gce access
+      - name: Set up SSH key
         run: |
-          python3 -m pip install --upgrade pip
-          pip3 install google-auth
-
-      # setting up ansible
-      - name: Set up Ansible and dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ansible python3-pip
-          pip3 install google-auth
-
-      # storing the service account key temporarily
-      - name: Create GCP service account key file
-        run: |
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}" > /tmp/gcp-service-account.json
-          chmod 600 /tmp/gcp-service-account.json
-
-      # running ansible playbook with gcp plugin
-      - name: Run Ansible Playbook with GCP Plugin
-        run: |
-          ansible-playbook -i infrastructure/ansible/inventories/gcp_compute.yml infrastructure/ansible/playbooks/site.yml \
-          --private-key ~/.ssh/google_compute_engine
-
-      # deploy svelte frontend using ssh
-      - name: Deploy Svelte Frontend Container to GCE
-        run: |
-          set -e
-          gcloud compute ssh debian@svelte-frontend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
-          docker pull osklot12/svelte-frontend:latest &&
-          docker stop svelte-frontend || true &&
-          docker rm svelte-frontend || true &&
-          docker run -d -p 80:3000 --name svelte-frontend osklot12/svelte-frontend:latest
-          "
-
-      # verify svelte frontend pp deployment
-      - name: Verify Svelte Frontend Deployment
-        run: |
-          gcloud compute ssh debian@svelte-frontend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
-          docker logs svelte-frontend
-          "
-
-      # deploy spring boot backend using ssh
-      - name: Deploy Spring Boot Backend Container to GCE
-        run: |
-          set -e
-          gcloud compute ssh debian@spring-backend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
-          docker pull osklot12/spring-backend:latest &&
-          docker stop spring-backend || true &&
-          docker rm spring-backend || true &&
-          docker run -d -p 8080:8080 --name spring-backend \
-            -e SPRING_PROFILES_ACTIVE=prod \
-            osklot12/spring-backend:latest
-          "
-
-      # verify spring backend app deployment
-      - name: Verify Spring Boot Backend Deployment
-        run: |
-          gcloud compute ssh debian@spring-backend --zone="europe-north1-a" --ssh-key-file=~/.ssh/google_compute_engine --command="
-          docker logs spring-backend
-          "
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > ~/.ssh/google_compute_engine
+          echo "${{ secrets.GCE_SSH_PUBLIC_KEY }}" > ~/.ssh/google_compute_engine.pub
+          chmod 600 ~/.ssh/google_compute_engine
+          chmod 600 ~/.ssh/google_compute_engine.pub
           
