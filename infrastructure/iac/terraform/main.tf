@@ -1,7 +1,7 @@
 # specifying provider, region and project
 provider "google" {
-  project = "idata2502-ci-cd"
-  region  = "europe-north1"
+  project = var.project
+  region  = var.region
 }
 
 # setting backend for state management
@@ -13,14 +13,14 @@ terraform {
 }
 
 # setting variables
+variable "project" {
+  description = "The project ID"
+  default = "idata2502-ci-cd"
+}
+
 variable "machine_type" {
   description = "Machine type for the instances"
   default = "e2-micro"
-}
-
-variable "image" {
-  description = "Image for the instances"
-  default = "debian-cloud/debian-11"
 }
 
 variable "region" {
@@ -51,6 +51,11 @@ variable "subnet_cidr" {
 variable "public_ssh_key_content" {
   description = "Public SSH key content"
   default = ""
+}
+
+data "google_compute_image" "latest_image" {
+  family = "tomorrow-standard-family"
+  project = var.project
 }
 
 # creating a dedicated network for the application
@@ -145,7 +150,7 @@ resource "google_compute_instance" "svelte_frontend" {
   # configuring boot image
   boot_disk {
     initialize_params {
-      image = var.image
+      image = data.google_compute_image.latest_image.self_link
       size  = 10
     }
   }
@@ -190,7 +195,7 @@ resource "google_compute_instance" "spring_backend" {
   # configuring boot image
   boot_disk {
     initialize_params {
-      image = var.image
+      image = data.google_compute_image.latest_image.self_link
       size  = 10
     }
   }
@@ -235,7 +240,7 @@ resource "google_compute_instance" "postgresql_db" {
   # configuring boot image
   boot_disk {
     initialize_params {
-      image = var.image
+      image = data.google_compute_image.latest_image.self_link
       size  = 10
     }
   }
