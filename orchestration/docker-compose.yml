@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: trump
+      POSTGRES_PASSWORD: not_harris
+      POSTGRES_DB: tomorrow_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - tomorrow-network
+
+  backend:
+    image: osklot12/spring-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tomorrow_db
+      SPRING_DATASOURCE_USERNAME: trump
+      SPRING_DATASOURCE_PASSWORD: not_harris
+    ports:
+      - "8080:8080"
+    networks:
+      - tomorrow-network
+    depends_on:
+      - db
+
+  frontend:
+    image: osklot12/svelte-frontend
+    ports:
+      - "80:80"
+    networks:
+      - tomorrow-network
+    depends_on:
+      - backend
+
+networks:
+  tomorrow-network:
+    driver: bridge
+
+volumes:
+  db_data:
