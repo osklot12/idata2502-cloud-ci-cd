@@ -27,11 +27,11 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        working-directory: ../frontend
+        working-directory: ./frontend
         run: npm install
 
       - name: Run Vitest unit tests
-        working-directory: ../frontend
+        working-directory: ./frontend
         run: npx vitest --run
 
       - name: Upload test results if tests fail
