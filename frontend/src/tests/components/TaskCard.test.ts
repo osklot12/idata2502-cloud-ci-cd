@@ -1,9 +1,7 @@
 import { render, fireEvent } from '@testing-library/svelte';
 import TaskCard from '../../components/TaskCard.svelte';
-import TaskList from '../../components/TaskList.svelte';
 import { expect, test } from 'vitest';
 import { vi } from 'vitest';
-
 
 test('renders TaskCard component with initial props', () => {
     const { getByText, getByLabelText } = render(TaskCard, {
@@ -25,6 +23,7 @@ test('renders TaskCard component with initial props', () => {
 });
 
 test('allows changing task status', async () => {
+    const onStatusChange = vi.fn();
     const { getByLabelText } = render(TaskCard, {
         props: {
             title: 'Task 1',
@@ -32,7 +31,7 @@ test('allows changing task status', async () => {
             dueDate: '2024-11-08',
             assignedTo: 'John Doe',
             status: 'pending',
-            onStatusChange: vi.fn()
+            onStatusChange: onStatusChange
         }
     });
 
@@ -40,5 +39,26 @@ test('allows changing task status', async () => {
     await fireEvent.change(statusSelect, { target: { value: 'completed' } });
 
     expect(statusSelect.value).toBe('completed');
+    expect(onStatusChange).toHaveBeenCalledWith('completed');
 });
+
+test('removes a task in TaskCard', async () => {
+    const onRemove = vi.fn();
+    const { getByText } = render(TaskCard, {
+        props: {
+            title: 'Task 1',
+            description: 'Description of Task 1',
+            dueDate: '2024-11-08',
+            assignedTo: 'John Doe',
+            status: 'pending',
+            onRemove
+        }
+    });
+
+    const removeButton = getByText('✕');
+    await fireEvent.click(removeButton);
+
+    expect(onRemove).toHaveBeenCalled();
+});
+
 

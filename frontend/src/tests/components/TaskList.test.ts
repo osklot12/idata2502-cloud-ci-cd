@@ -1,6 +1,7 @@
-import { render } from '@testing-library/svelte';
+import { render, fireEvent } from '@testing-library/svelte';
 import TaskList from '../../components/TaskList.svelte';
-import { test, expect } from 'vitest';
+import { expect, test } from 'vitest';
+import { vi } from 'vitest';
 
 test('renders TaskList component', () => {
   const { getByText } = render(TaskList);
@@ -15,3 +16,13 @@ test('renders tasks in TaskList component', () => {
   expect(getByText('Task 2')).toBeInTheDocument();
   expect(getByText('Task 3')).toBeInTheDocument();
 });
+
+test('updates task status in TaskList', async () => {
+  const { getByText, getByLabelText } = render(TaskList);
+
+  const statusSelect = getByLabelText('Status:') as HTMLSelectElement;
+  await fireEvent.change(statusSelect, { target: { value: 'completed' } });
+
+  expect(statusSelect.value).toBe('completed');
+});
+
