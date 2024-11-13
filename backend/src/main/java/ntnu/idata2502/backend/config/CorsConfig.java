@@ -1,4 +1,4 @@
-package ntnu.idata2502.backend.configuration;
+package ntnu.idata2502.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

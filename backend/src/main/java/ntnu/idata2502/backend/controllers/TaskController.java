@@ -1,5 +1,6 @@
 package ntnu.idata2502.backend.controllers;
 
+import ntnu.idata2502.backend.dto.TaskRequest;
 import ntnu.idata2502.backend.entities.Task;
 import ntnu.idata2502.backend.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +32,14 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        Task createdTask = taskService.createTask(task);
+    public ResponseEntity<Task> createTask(@RequestBody TaskRequest request) {
+        Task createdTask = taskService.createTask(request);
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable long id, @RequestBody Task updatedTask) {
-        Task task = taskService.updateTaskById(id, updatedTask);
+    public ResponseEntity<Task> updateTask(@PathVariable long id, @RequestBody TaskRequest request) {
+        Task task = taskService.updateTaskById(id, request);
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
