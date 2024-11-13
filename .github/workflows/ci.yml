@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - workflow/testing # Remove in full release
   pull_request:
     branches:
       - main
@@ -12,24 +13,32 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: frontend
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: List files in frontend directory
+        run: ls -la ./frontend
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
-          cache: 'npm'
+          node-version: "18"
+
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v3
+        with:
+            path: ~/.npm
+            key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+              ${{ runner.os }}-node-
 
       - name: Install dependencies
+        working-directory: ./frontend
         run: npm install
 
       - name: Run Vitest unit tests
+        working-directory: ./frontend
         run: npx vitest --run
 
       - name: Upload test results if tests fail
