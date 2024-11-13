@@ -7,6 +7,7 @@ services:
       POSTGRES_USER: trump
       POSTGRES_PASSWORD: not_harris
       POSTGRES_DB: tomorrow_db
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
