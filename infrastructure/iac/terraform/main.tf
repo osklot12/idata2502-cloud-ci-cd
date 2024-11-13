@@ -1,10 +1,10 @@
-# specifying provider, region and project
+# Provider, project, and region
 provider "google" {
   project = var.project
   region  = var.region
 }
 
-# setting backend for state management
+# State management backend
 terraform {
   backend "gcs" {
     bucket = "tomorrow-terraform-bucket"
@@ -12,7 +12,7 @@ terraform {
   }
 }
 
-# setting variables
+# Variable declarations
 variable "project" {
   description = "The project ID"
   default = "idata2502-ci-cd"
@@ -38,139 +38,59 @@ variable "service_account_email" {
   default = "terraform-service-account@idata2502-ci-cd.iam.gserviceaccount.com"
 }
 
-variable "service_account_scope" {
-  description = "Scope of the service account"
-  default = "https://www.googleapis.com/auth/cloud-platform"
-}
-
 variable "subnet_cidr" {
   description = "CIDR range for the subnet"
   default = "10.0.0.0/24"
 }
 
-variable "public_ssh_key_content" {
-  description = "Public SSH key content"
-  default = ""
-}
-
-data "google_compute_image" "latest_image" {
-  family = "tomorrow-standard-family"
-  project = var.project
-}
-
-# creating a dedicated network for the application
+# Network setup
 resource "google_compute_network" "tomorrow_network" {
   name = "tomorrow-app-network"
 }
 
-# setting up a subnet
+# Subnet setup
 resource "google_compute_subnetwork" "tomorrow_subnetwork" {
-  name = "tomorrow-app-subnetwork"
+  name          = "tomorrow-app-subnetwork"
   ip_cidr_range = var.subnet_cidr
-  region = var.region
-  network = google_compute_network.tomorrow_network.id
+  region        = var.region
+  network       = google_compute_network.tomorrow_network.id
 }
 
-# setting firewall rule for ssh access
-resource "google_compute_firewall" "allow_ssh" {
-  name = "allow-ssh"
-  network = google_compute_network.tomorrow_network.id
+# GKE Cluster Configuration
+resource "google_container_cluster" "tomorrow_k8s_cluster" {
+  name     = "tomorrow-cluster"
+  location = var.region
 
-  # allowing tcp traffic on port 22
-  allow {
-    protocol = "tcp"
-    ports = ["22"]
+  # Basic settings for the cluster
+  initial_node_count = 3  # Number of nodes in the cluster
+  min_master_version  = "1.20"  # Set the version or use default
+
+  # Node pool configuration
+  node_config {
+    machine_type = var.machine_type
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
   }
 
-  # allowing all ip addresses
-  source_ranges = ["0.0.0.0/0"]
+  # Enable auto-scaling and set limits
+  enable_autoscaling   = true
+  min_node_count       = 1
+  max_node_count       = 5
 
-  # setting target tags
-  target_tags = ["tomorrow-server"]
+  # Network settings
+  network    = google_compute_network.tomorrow_network.id
+  subnetwork = google_compute_subnetwork.tomorrow_subnetwork.id
 }
 
-# setting firewall rule for http traffic to the frontend
-resource "google_compute_firewall" "allow_http_frontend" {
-  name = "allow-http-frontend"
-  network = google_compute_network.tomorrow_network.id
-
-  # allowing tcp traffic on port 80
-  allow {
-    protocol = "tcp"
-    ports = ["80"]
-  }
-
-  # allowing all ip addresses
-  source_ranges = ["0.0.0.0/0"]
-
-  # setting target tags
-  target_tags = ["tomorrow-server"]
+# Outputting the GKE Cluster endpoint
+output "kubernetes_cluster_endpoint" {
+  value = google_container_cluster.tomorrow_k8s_cluster.endpoint
 }
 
-# setting firewall rule for http traffic to the backend
-resource "google_compute_firewall" "allow_http_backend" {
-  name = "allow-http-backend"
-  network = google_compute_network.tomorrow_network.id
-
-  # allowing tcp traffic on port 8080
-  allow {
-    protocol = "tcp"
-    ports = ["8080"]
-  }
-
-  # allowing all ip addresses
-  source_ranges = ["0.0.0.0/0"]
-
-  # setting target tags
-  target_tags = ["tomorrow-server"]
-}
-
-# google compute instance
-resource "google_compute_instance" "tomorrow_server" {
-  name         = "tomorrow-server"
-  machine_type = var.machine_type
-  zone         = var.zone
-
-  # configuring boot image
-  boot_disk {
-    initialize_params {
-      image = data.google_compute_image.latest_image.self_link
-      size  = 30
-    }
-  }
-
-  # configuring network interface
-  network_interface {
-    network = google_compute_network.tomorrow_network.id
-    subnetwork = google_compute_subnetwork.tomorrow_subnetwork.id
-    access_config {}
-  }
-
-  # using the terraform service account
-  service_account {
-    email = var.service_account_email
-    scopes = [var.service_account_scope]
-  }
-
-  # setting up public ssh key
-  metadata = {
-    ssh-keys = "debian:${var.public_ssh_key_content}"
-  }
-
-  # setting frontend tag for network rule purpose
-  tags = ["tomorrow-server"]
-
-  # adding labels
-  labels = {
-    environment = "development"
-    app = "tomorrow"
-  }
-
-  # declaring dependencies
-  depends_on = [google_compute_network.tomorrow_network, google_compute_subnetwork.tomorrow_subnetwork]
-}
-
-# outputting the isntance ip
-output "tomorrow_server_instance" {
-  value = google_compute_instance.tomorrow_server.network_interface[0].access_config[0].nat_ip
+# Outputting the cluster name for CI/CD configurations
+output "kubernetes_cluster_name" {
+  value = google_container_cluster.tomorrow_k8s_cluster.name
 }
