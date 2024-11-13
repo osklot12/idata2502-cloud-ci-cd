@@ -14,8 +14,11 @@ public class CorsConfig {
        return new WebMvcConfigurer() {
            @Override
            public void addCorsMappings(CorsRegistry reg) {
+               String frontendUrl = System.getenv("FRONTEND_URL");
                reg.addMapping("/**")
-                       .allowedOrigins("http://localhost")
+                       .allowedOrigins(
+                               frontendUrl != null ? frontendUrl : "http://localhost"
+                       )
                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                        .allowedHeaders("*")
                        .allowCredentials(true);
