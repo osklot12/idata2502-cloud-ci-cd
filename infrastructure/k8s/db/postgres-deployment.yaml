@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:13  # PostgreSQL image version
+          image: postgres:13
           ports:
             - containerPort: 5432
           env:
@@ -28,10 +28,12 @@ spec:
                 secretKeyRef:
                   name: db-credentials
                   key: password
-          volumeMounts:              # Place volumeMounts here under the container
+            - name: POSTGRES_DB
+              value: "tomorrow_db" # This will create the "tomorrow_db" database
+          volumeMounts:
             - mountPath: "/var/lib/postgresql/data"
               name: postgres-storage
-      volumes:                     # Place volumes here under spec.template.spec
+      volumes:
         - name: postgres-storage
           persistentVolumeClaim:
             claimName: postgres-pvc

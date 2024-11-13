@@ -1,5 +1,8 @@
 FROM openjdk:17-jdk-slim
 
+# setting environment variables
+ENV SPRING_PROFILES_ACTIVE=prod
+
 # working directory in the container
 WORKDIR /app
 
