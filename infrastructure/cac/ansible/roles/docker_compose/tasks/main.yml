@@ -1,0 +1,16 @@
+# getting the latest docker compose release tag
+- name: Get the latest Docker Compose release tag
+  shell: "curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name"
+  register: docker_compose_version
+  changed_when: false
+
+# installing docker compose
+- name: Install Docker Compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version.stdout }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+    dest: /usr/local/bin/docker-compose
+    mode: "0755"
+
+# verifying the installation
+- name: Verify Docker Compose installation
+  shell: docker-compose --version

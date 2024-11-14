@@ -1,43 +1,22 @@
----
-
-- name: Update apt cache and allow release info changes if needed
-  shell: "apt-get update --allow-releaseinfo-change"
-  register: apt_update
-  ignore_errors: yes
-
-- name: Retry apt cache update if needed
-  apt:
-    update_cache: yes
-  when: apt_update is failed
-  ignore_errors: yes
-
-# adding docker key
-- name: Add Docker's official GPG key
+# adding the docker gpg key
+- name: Add Docker GPG key
   apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
+    url: https://download.docker.com/linux/debian/gpg
     state: present
 
-# setting up docker repo
-- name: Set up Docker repository
-  shell: |
-    echo "deb [arch=amd64] https://download.docker.com/linux/debian buster stable" | tee /etc/apt/sources.list.d/docker.list
-
-# installing docker and dependencies
-- name: Install Docker and dependencies
-  apt:
-    name: "{{ item }}"
+# adding the docker repository
+- name: Add Docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
     state: present
-    update_cache: yes
-  loop:
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - gnupg
-    - lsb-release
 
-# installing docker engine
-- name: Install Docker Engine
+# installing docker
+- name: Install Docker
   apt:
     name: docker-ce
-    state: latest
+    state: present
     update_cache: yes
+
+# verifying the installation
+- name: Verify Docker installation
+  shell: docker --version

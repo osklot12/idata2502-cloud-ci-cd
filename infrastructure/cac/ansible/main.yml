@@ -1,5 +1,7 @@
-- name: Docker Image
-  hosts: all
+# the main playbook setting up a tomorrow server image
+- hosts: all
   become: true
   roles:
-    - docker
+    - role: system_setup
+    - role: docker
+    - role: docker_compose

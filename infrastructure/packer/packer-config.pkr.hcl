@@ -1,3 +1,4 @@
+# installing plugins for packer
 packer {
   required_plugins {
     googlecompute = {

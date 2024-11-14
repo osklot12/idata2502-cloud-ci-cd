@@ -1,0 +1,16 @@
+# updating cache
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+# installing required packages
+- name: Install required packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - jq
+    state: present
