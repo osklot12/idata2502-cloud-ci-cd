@@ -79,7 +79,7 @@ public class AuthController {
             response.put("token", token);
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
-            response.put("error", "Invalid username or password");
+            response.put("error", "Incorrect username or password.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }

@@ -1,5 +1,5 @@
 import { render } from '@testing-library/svelte';
-import TaskList from '../../components/TaskList.svelte';
+import TaskList from '$components/task/TaskList.svelte';
 import { test, expect } from 'vitest';
 
 test('renders TaskList component', () => {

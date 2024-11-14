@@ -54,6 +54,7 @@ public class StandardTaskService implements TaskService{
         task.setCreatedAt(LocalDateTime.now());
         task.setCreator(creator);
 
+        System.out.println(request.toString());
         return taskRepository.save(task);
     }
 

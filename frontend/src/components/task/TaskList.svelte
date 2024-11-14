@@ -1,6 +1,6 @@
 <script>
     import TaskCard from './TaskCard.svelte';
-    import { isAuthenticated } from '../stores/authStore';
+    import { isAuthenticated } from '../../stores/authStore.js';
 
     $: if (!$isAuthenticated) {
       window.location.hash = '#/';

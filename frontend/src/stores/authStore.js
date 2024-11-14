@@ -1,13 +1,12 @@
-// src/stores/authStore.js
-import { writable } from 'svelte/store';
+import { writable } from 'svelte/store'
 
-// Store for tracking if the user is authenticated
-export const isAuthenticated = writable(false);
-
-// Store for holding the JWT token
+// store to hold the jwt token
 export const token = writable(localStorage.getItem('token') || null);
 
-// Sync token changes to localStorage and update isAuthenticated status
+// store to track if the user is authenticated
+export const isAuthenticated = writable(!!localStorage.getItem('token'));
+
+// keep localStorage and isAuthenticated in sync with the token store
 token.subscribe((value) => {
     if (value) {
         localStorage.setItem('token', value);
@@ -16,4 +15,13 @@ token.subscribe((value) => {
         localStorage.removeItem('token');
         isAuthenticated.set(false);
     }
-});
+})
+
+// helper functions for setting and clearing the token
+export function setToken(newToken) {
+    token.set(newToken);
+}
+
+export function clearToken() {
+    token.set(null);
+}

@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/svelte';
-import TaskCard from '../../components/TaskCard.svelte';
+import TaskCard from '$components/task/TaskCard.svelte';
 import { expect, test } from 'vitest';
 import { vi } from 'vitest';
 
