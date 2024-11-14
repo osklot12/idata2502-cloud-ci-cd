@@ -16,7 +16,7 @@ public class CorsConfig {
                String frontendUrl = System.getenv("FRONTEND_URL");
                reg.addMapping("/**")
                        .allowedOrigins(
-                               frontendUrl != null ? frontendUrl : "http://localhost"
+                               frontendUrl != null ? frontendUrl : "http://localhost:5173"
                        )
                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                        .allowedHeaders("*")
