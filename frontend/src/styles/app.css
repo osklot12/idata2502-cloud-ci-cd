@@ -1,7 +1,75 @@
+:root {
+  --primary-color: #0D92F4;
+  --secondary-color: #77CDFF;
+  --accent-color: #F95454;
+  --second-accent-color: #C62E2E;
+  --background-color: #fafafa;
+}
+
+
 /* App styles */
+* {
+  font-family: "Outfit", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  background-color: var(--background-color);
+}
+
 main {
-  font-family: Arial, sans-serif;
+  margin: 0 auto;
   padding: 1rem;
+  min-height: calc(100vh - 2rem);
+  display: flex;
+}
+
+.center-column-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+.std-form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+.std-form-element {
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  font-size: 16px;
+}
+
+.std-form-input {
+  outline: none;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.26);
+  background-color: var(--background-color);
+}
+
+.std-form-input:focus {
+  border-bottom: 1px solid rgb(0, 0, 0);
+}
+
+.std-form-btn {
+  background-color: var(--second-accent-color);
+  color: white;
+}
+
+.std-form-hint {
+  text-align: center;
 }
 
 /* TaskList styles */

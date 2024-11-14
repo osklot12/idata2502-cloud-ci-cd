@@ -1,10 +1,17 @@
 <script>
   import TaskList from './components/TaskList.svelte';
+  import AuthPage from './components/AuthPage.svelte';
+
+  import { isAuthenticated } from './stores/authStore';
+
+  // Log to confirm reactive updates
+  $: console.log("Auth status in App.svelte:", $isAuthenticated);
 </script>
 
-<style src="./styles/global.css"></style>
-
 <main>
-  <h1>My Tasks</h1>
-  <TaskList />
+  {#if $isAuthenticated}
+    <TaskList />
+  {:else}
+    <AuthPage />
+  {/if}
 </main>
