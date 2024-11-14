@@ -1,17 +1,18 @@
 <script>
-  import TaskList from './components/TaskList.svelte';
-  import AuthPage from './components/AuthPage.svelte';
-
+  import Router from 'svelte-spa-router';
+  import { routes } from './routes';
   import { isAuthenticated } from './stores/authStore';
 
-  // Log to confirm reactive updates
-  $: console.log("Auth status in App.svelte:", $isAuthenticated);
+  $: if ($isAuthenticated) {
+    // redirect to /tasks if authenticated
+    window.location.hash = '#/tasks';
+  } else {
+    // redirect to login if not authenticated
+    window.location.hash = '#/auth/login';
+  }
 </script>
 
 <main>
-  {#if $isAuthenticated}
-    <TaskList />
-  {:else}
-    <AuthPage />
-  {/if}
+  <Router {routes} />
 </main>
+

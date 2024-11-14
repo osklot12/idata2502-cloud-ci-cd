@@ -3,6 +3,7 @@ package ntnu.idata2502.backend.controllers;
 import ntnu.idata2502.backend.dto.LoginRequest;
 import ntnu.idata2502.backend.dto.RegisterRequest;
 import ntnu.idata2502.backend.entities.User;
+import ntnu.idata2502.backend.exceptions.UserRegistrationException;
 import ntnu.idata2502.backend.services.UserService;
 import ntnu.idata2502.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,16 +49,16 @@ public class AuthController {
      * @return success message if registration is successful
      */
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
-        User newUser = userService.registerUser(request);
-
-        if (newUser == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is already taken.");
-        }
-
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody RegisterRequest request) {
         Map<String, String> response = new HashMap<>();
-        response.put("message", "User registered successfully.");
-        return ResponseEntity.ok(response);
+        try {
+            User newUser = userService.registerUser(request);
+            response.put("message", "User registered successfully.");
+            return ResponseEntity.ok(response);
+        } catch (UserRegistrationException e) {
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
     }
 
     /**
@@ -67,19 +68,19 @@ public class AuthController {
      * @return JWT token if login is successful
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
+        Map<String, String> response = new HashMap<>();
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.username(), request.password())
             );
 
             String token = jwtUtil.generateToken(request.username());
-
-            Map<String, String> response = new HashMap<>();
             response.put("token", token);
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            response.put("error", "Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
 
