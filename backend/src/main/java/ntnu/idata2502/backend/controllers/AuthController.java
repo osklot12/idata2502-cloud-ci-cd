@@ -4,6 +4,7 @@ import ntnu.idata2502.backend.dto.LoginRequest;
 import ntnu.idata2502.backend.dto.RegisterRequest;
 import ntnu.idata2502.backend.entities.User;
 import ntnu.idata2502.backend.exceptions.UserRegistrationException;
+import ntnu.idata2502.backend.repositories.UserRepository;
 import ntnu.idata2502.backend.services.UserService;
 import ntnu.idata2502.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -27,6 +29,7 @@ public class AuthController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
 
     /**
      * Constructor.
@@ -36,10 +39,11 @@ public class AuthController {
      * @param authenticationManager the authentication manager
      */
     @Autowired
-    public AuthController(UserService userService, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public AuthController(UserService userService, JwtUtil jwtUtil, AuthenticationManager authenticationManager, UserRepository userRepository) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -53,6 +57,12 @@ public class AuthController {
         Map<String, String> response = new HashMap<>();
         try {
             User newUser = userService.registerUser(request);
+
+            // generate the jtw token
+            String token = jwtUtil.generateToken(request.username());
+
+            response.put("userId", newUser.getId().toString());
+            response.put("token", token);
             response.put("message", "User registered successfully.");
             return ResponseEntity.ok(response);
         } catch (UserRegistrationException e) {
@@ -75,7 +85,17 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(request.username(), request.password())
             );
 
+            // fetch the authenticated user from the database
+            Optional<User> user = userRepository.findByUsername(request.username());
+            if (user.isEmpty()) {
+                response.put("message", "User not found.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+
+            // generate the jtw token
             String token = jwtUtil.generateToken(request.username());
+
+            response.put("userId", user.get().getId().toString());
             response.put("token", token);
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
@@ -83,5 +103,4 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
-
 }

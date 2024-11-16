@@ -4,8 +4,10 @@
   --accent-color: #F95454;
   --second-accent-color: #C62E2E;
   --background-color: #fafafa;
-}
 
+  --text-color: #202020;
+  --secondary-text-color: rgba(32, 32, 32, 0.78);
+}
 
 /* App styles */
 * {

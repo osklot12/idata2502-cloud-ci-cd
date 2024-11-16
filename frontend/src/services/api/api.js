@@ -1,5 +1,5 @@
 import {get} from 'svelte/store'
-import {token, setToken, clearToken} from '../../stores/authStore.js'
+import {token, setToken, clearToken, setUserId, clearUserId } from '../../stores/authStore.js'
 
 const API_BASE_URL = "http://localhost:8080/api"
 
@@ -17,14 +17,13 @@ export async function login(username, password) {
             throw new Error(errorData.message || "Login failed");
         }
 
-        const data = await response.json();
-        setToken(data.token);
-        return {success: true};
+        return handleAuthResponse(response);
     } catch (error) {
         console.error("Error during login:", error)
         return {success: false, message: error.message}
     }
 }
+
 
 // function to register a new user
 export async function register(username, email, password) {
@@ -40,18 +39,34 @@ export async function register(username, email, password) {
             throw new Error(errorData.message || "Registration failed");
         }
 
-        const data = await response.json();
-        setToken(data.token);
-        return { success: true, message: data.message };
+        return handleAuthResponse(response);
     } catch (error) {
         console.error("Error during registration:", error);
         return { success: false, message: error.message };
     }
 }
 
+// handles the response from authorization functions
+async function handleAuthResponse(response) {
+    try {
+        const data = await response.json();
+        if (!data.token || !data.userId) {
+            throw new Error("Invalid response format.")
+        }
+
+        setToken(data.token);
+        setUserId(data.userId);
+
+        return {success: true, message: data.message };
+    } catch (error) {
+        throw new Error("Failed to parse response: " + error.message);
+    }
+}
+
 // function to log out the user
 export function logout() {
     clearToken();
+    clearUserId();
 }
 
 // function to fetch tasks

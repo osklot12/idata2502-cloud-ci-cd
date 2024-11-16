@@ -18,7 +18,7 @@ export default class Task {
         this.deadline = deadline ? new Date(deadline) : null;
         this.createdAt = createdAt ? new Date(createdAt) : null;
         this.creator = new User(creator);
-        this.assignees = assignees;
+        this.assignees = assignees.map(assignee => new User(assignee));
     }
 
     updateStatus(newStatus) {
