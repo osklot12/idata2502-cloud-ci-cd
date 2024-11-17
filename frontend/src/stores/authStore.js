@@ -8,11 +8,35 @@ export const userId = writable(localStorage.getItem('userId') || null);
 // store to track if the user is authenticated
 export const isAuthenticated = writable(!!localStorage.getItem('token'));
 
+// helper function to decode a JWT token
+function decodeToken(token) {
+    try {
+        return JSON.parse(atob(token.split(".")[1]));
+    } catch (error) {
+        console.error("Failed to decode token:", error);
+        return null;
+    }
+}
+
+// function to check if the token is expired
+function isTokenExpired(token) {
+    const decoded = decodeToken(token);
+    if (!decoded || !decoded.exp) return true;
+
+    const currentTime = Math.floor(Date.now() / 1000);
+    return decoded.exp < currentTime;
+}
+
 // keep localStorage and isAuthenticated in sync with the token store
 token.subscribe((value) => {
     if (value) {
-        localStorage.setItem('token', value);
-        isAuthenticated.set(true);
+        if (isTokenExpired(value)) {
+            console.warn("Token is expired. Clearing token.")
+            clearToken();
+        } else {
+            localStorage.setItem('token', value);
+            isAuthenticated.set(true);
+        }
     } else {
         localStorage.removeItem('token');
         isAuthenticated.set(false);
