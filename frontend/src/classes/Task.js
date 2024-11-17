@@ -26,7 +26,7 @@ export default class Task {
     }
 
     getFormattedDeadline() {
-        return this.deadline ? this.deadline.toLocaleString() : 'No deadline';
+        return this.deadline ? this.deadline.toLocaleDateString() : 'No deadline';
     }
 
     getFormattedCreatedAt() {

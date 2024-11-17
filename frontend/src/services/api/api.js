@@ -1,66 +1,58 @@
 import {get} from 'svelte/store'
-import {token, setToken, clearToken, setUserId, clearUserId } from '../../stores/authStore.js'
+import {token, setToken, clearToken, setUserId, clearUserId} from '../../stores/authStore.js'
 
 const API_BASE_URL = "http://localhost:8080/api"
 
+const DEFAULT_HEADERS = {"Content-Type": "application/json"}
+
 // function to log in a user
 export async function login(username, password) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({username, password})
-        });
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: createHeaders(),
+        body: JSON.stringify({username, password})
+    });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Login failed");
-        }
+    const data = await handleResponse(response, "Cannot log in");
 
-        return handleAuthResponse(response);
-    } catch (error) {
-        console.error("Error during login:", error)
-        return {success: false, message: error.message}
-    }
+    handleUserAuthorization(data);
+    return {success: true, message: data.message};
 }
 
+function createHeaders(additionalHeaders = {}) {
+    return { ...DEFAULT_HEADERS, ...additionalHeaders };
+}
 
 // function to register a new user
 export async function register(username, email, password) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/register`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ username, email, password })
-        });
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: "POST",
+        headers: createHeaders(),
+        body: JSON.stringify({username, email, password})
+    });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Registration failed");
-        }
+    const data = await handleResponse(response, "Cannot register user");
 
-        return handleAuthResponse(response);
-    } catch (error) {
-        console.error("Error during registration:", error);
-        return { success: false, message: error.message };
-    }
+    handleUserAuthorization(data);
+    return {success: true, message: data.message};
 }
 
 // handles the response from authorization functions
-async function handleAuthResponse(response) {
-    try {
-        const data = await response.json();
-        if (!data.token || !data.userId) {
-            throw new Error("Invalid response format.")
-        }
-
-        setToken(data.token);
-        setUserId(data.userId);
-
-        return {success: true, message: data.message };
-    } catch (error) {
-        throw new Error("Failed to parse response: " + error.message);
+function handleUserAuthorization(data) {
+    if (!responseContainsAuthInfo(data)) {
+        throw new Error("The response does not contain authorization information");
     }
+
+    setUserAuthInfo(data.token, data.userId);
+}
+
+function setUserAuthInfo(token, userId) {
+    setToken(token);
+    setUserId(userId);
+}
+
+function responseContainsAuthInfo(data) {
+    return data.token && data.userId;
 }
 
 // function to log out the user
@@ -75,17 +67,10 @@ export async function getTasks() {
 
     const response = await fetch(`${API_BASE_URL}/tasks`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${jwtToken}`
-        }
+        headers: createHeaders({"Authorization": `Bearer ${jwtToken}`})
     });
 
-    if (!response.ok) {
-        throw new Error("Failed to fetch tasks");
-    }
-
-    return await response.json();
+    return await handleResponse(response, "Cannot fetch tasks")
 }
 
 // function to create a new task
@@ -94,16 +79,31 @@ export async function createTask(task) {
 
     const response = await fetch(`${API_BASE_URL}/tasks`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${jwtToken}`
-        },
+        headers: createHeaders({"Authorization": `Bearer ${jwtToken}`}),
         body: JSON.stringify(task)
     });
 
+    return await handleResponse(response, "Cannot create task");
+}
+
+// function to update an existing task
+export async function updateTask(task) {
+    const jwtToken = get(token);
+
+    const response = await fetch(`${API_BASE_URL}/tasks/${task.id}`, {
+        method: "PUT",
+        headers: createHeaders({"Authorization": `Bearer ${jwtToken}`}),
+        body: JSON.stringify(task)
+    });
+
+    return await handleResponse(response, "Cannot update task " + task.id);
+}
+
+// handles the response of a request
+async function handleResponse(response, defaultErrMsg = "Request failed") {
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create task");
+        throw new Error(errorData.message || defaultErrMsg);
     }
 
     return await response.json();

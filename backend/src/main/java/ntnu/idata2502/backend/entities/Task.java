@@ -2,6 +2,7 @@ package ntnu.idata2502.backend.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +23,7 @@ public class Task {
     private String status;
 
     @Column
-    private LocalDateTime deadline;
+    private LocalDate deadline;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -53,7 +54,7 @@ public class Task {
      * @param deadline the task deadline
      * @param creator the user that created the task
      */
-    public Task(String header, String description, String status, LocalDateTime deadline, User creator) {
+    public Task(String header, String description, String status, LocalDate deadline, User creator) {
         this.header = header;
         this.description = description;
         this.status = status;
@@ -92,10 +93,10 @@ public class Task {
         this.status = status;
     }
 
-    public LocalDateTime getDeadline() {
+    public LocalDate getDeadline() {
         return deadline;
     }
-    public void setDeadline(LocalDateTime deadline) {
+    public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
     }
 

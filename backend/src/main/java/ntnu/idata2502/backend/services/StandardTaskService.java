@@ -69,7 +69,7 @@ public class StandardTaskService implements TaskService{
         task.setDescription(request.description());
         task.setStatus(request.status());
         task.setDeadline(request.deadline());
-        task.setAssignees(getUsersByIds(request.assigneeIds()));
+        task.setAssignees(new HashSet<>(getUsersByIds(request.assigneeIds())));
 
         return taskRepository.save(task);
     }

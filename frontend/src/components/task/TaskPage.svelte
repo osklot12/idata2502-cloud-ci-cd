@@ -2,4 +2,10 @@
 import TaskScroll from './TaskScroll.svelte'
 </script>
 
-<TaskScroll/>
+<div>
+    <TaskScroll/>
+</div>
+
+<style>
+    
+</style>

@@ -1,23 +1,89 @@
 <script>
     import {userId} from "../../stores/authStore.js";
+    import {updateTask} from "../../services/api/api.js";
+    import Task from "../../classes/Task.js";
 
     export let task;
 
     let isMinimized = true;
+    let isEditing = false;
     let currentUserId = $userId;
+
+    let updatedHeader = task.header;
+    let updatedDescription = task.description;
+    let updatedDeadline = task.deadline
+        ? task.deadline.toISOString().split("T")[0]
+        : "";
+
+    let isLoading = false;
+    let errorMessage = "";
 
     function toggleMinimize() {
         isMinimized = !isMinimized;
+    }
+
+    function toggleEditMode() {
+        isEditing = !isEditing;
+
+        if (!isEditing) {
+            updatedHeader = task.header;
+            updatedDescription = task.description;
+            updatedDeadline = task.deadline
+                ? task.deadline.toISOString().split("T")[0]
+                : "";
+            errorMessage = "";
+        }
+    }
+
+    async function saveTask() {
+        isLoading = true;
+        errorMessage = "";
+
+        try {
+            const updatedTask = {
+                ...task,
+                header: updatedHeader,
+                description: updatedDescription,
+                deadline: updatedDeadline
+            };
+
+            console.log("Updated Task Payload:", updatedTask);
+            const response = await updateTask(updatedTask);
+
+            task = new Task(response);
+
+            isEditing = false;
+        } catch (error) {
+            errorMessage = error.message || "Failed to update the task.";
+            console.error("Error updating task:", error);
+        } finally {
+            isLoading = false;
+        }
     }
 </script>
 
 <div class="task-container">
     <div class="task-header">
-        {task.header}
+        {#if isEditing}
+            <input
+                    type="text"
+                    bind:value={updatedHeader}
+                    class="task-title-input"
+            />
+        {:else}
+            {task.header}
+        {/if}
         <div class="task-header-options">
             {#if String(task.creator.id) === String(currentUserId)}
-                <button class="task-btn">
-                    <span class="material-symbols-outlined">edit</span>
+                {#if isEditing}
+                    <button class="task-btn" on:click={saveTask} disabled={isLoading}>
+                        <span class="material-symbols-outlined">check</span>
+                    </button>
+                {/if}
+                <button class="task-btn" on:click={toggleEditMode}>
+                        <span class="material-symbols-outlined">
+                            { isEditing ? "close" : "edit" }
+                        </span>
                 </button>
                 <button class="task-btn">
                     <span class="material-symbols-outlined">delete</span>
@@ -29,16 +95,31 @@
         </div>
     </div>
     {#if !isMinimized}
-        <p class="task-description">
-            {task.description}
-        </p>
-        <div class="task-deadline-wrap">
-        <span class="material-symbols-outlined deadline-icon">
-            pending_actions
-        </span>
-            <p class="task-deadline">
-                {task.getFormattedDeadline()}
+        {#if isEditing}
+            <textarea
+                    bind:value={updatedDescription}
+                    class="task-description-input"
+            ></textarea>
+        {:else}
+            <p class="task-description">
+                {task.description}
             </p>
+        {/if}
+        <div class="task-deadline-wrap">
+            <span class="material-symbols-outlined deadline-icon">
+                pending_actions
+            </span>
+            {#if isEditing}
+                <input
+                        type="date"
+                        bind:value={updatedDeadline}
+                        class="task-deadline-input"
+                />
+            {:else}
+                <p class="task-deadline">
+                    {task.getFormattedDeadline()}
+                </p>
+            {/if}
         </div>
 
         <div class="task-created-info">
@@ -62,6 +143,9 @@
                 </div>
             {/each}
         </div>
+        {#if errorMessage}
+            <p class="error-message">{errorMessage}</p>
+        {/if}
     {/if}
 </div>
 
@@ -88,6 +172,12 @@
         color: white;
     }
 
+    .task-title-input {
+        border: none;
+        font-size: 1.1rem;
+        outline: none;
+    }
+
     .task-header-options {
         display: flex;
         flex-direction: row;
@@ -101,8 +191,12 @@
         border: none;
         outline: none;
 
-        color: white;
+        color: rgba(255, 255, 255, 0.84);
         text-shadow: 2px 1px 0 rgba(0, 0, 0, 0.22);
+    }
+
+    .task-btn:hover {
+        color: white;
     }
 
     .task-description {
@@ -113,6 +207,21 @@
         line-height: 1.5rem;
     }
 
+    .task-description-input {
+        resize: vertical;
+
+        width: calc(100% - 20px);
+
+        font-size: 1rem;
+        padding: 10px;
+        margin: 0 0 10px 0;
+
+        line-height: 1.5rem;
+
+        border: none;
+        outline: none;
+    }
+
     .task-deadline-wrap {
         display: flex;
         flex-direction: row;
@@ -120,8 +229,17 @@
         align-items: center;
 
         margin: 0 10px 10px 10px;
+        padding: 10px;
 
         border-bottom: 1px solid var(--text-color);
+    }
+
+    .task-deadline {
+        margin: 0;
+    }
+
+    .task-deadline-input {
+        border: 1px solid var(--secondary-text-color)
     }
 
     .task-created-info {
@@ -139,7 +257,6 @@
         padding: 5px;
         border-radius: 20px;
         background-color: var(--primary-color);
-
 
         color: white;
         box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.22);
@@ -160,8 +277,10 @@
 
     .task-assignee {
         text-align: center;
-        padding: 5px;
+        padding: 5px 10px;
         border-radius: 20px;
-        border: 1px solid var(--secondary-text-color)
+        border: 1px solid var(--secondary-text-color);
+
+        margin: 0 auto;
     }
 </style>
