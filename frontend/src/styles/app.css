@@ -1,0 +1,239 @@
+<<<<<<< HEAD:frontend/src/app.css
+=======
+:root {
+  --primary-color: #0D92F4;
+  --secondary-color: #77CDFF;
+  --accent-color: #F95454;
+  --second-accent-color: #C62E2E;
+  --background-color: #fafafa;
+
+  --main-grey: #191919;
+  --secondary-grey: #242427;
+
+  --text-color: white;
+  --secondary-text-color: rgba(255, 255, 255, 0.87);
+}
+
+/* App styles */
+* {
+  font-family: "Outfit", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  background-color: var(--main-grey);
+}
+
+main {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+}
+
+.center-column-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+.std-form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+.std-form-element {
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.std-form-input {
+  outline: none;
+  transition: background-color 0.3s ease;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: 1px solid var(--secondary-text-color);
+  background-color: transparent;
+}
+
+.std-form-input:focus {
+  border-bottom: 1px solid var(--text-color);
+}
+
+.std-text-area {
+  outline: none;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid var(--secondary-text-color);
+  background-color: transparent;
+  resize: vertical;
+}
+
+.std-form-datepicker {
+  color: var(--text-color);
+  outline: none;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: 1px solid var(--secondary-text-color);
+  font-size: 1rem;
+  background-color: transparent;
+}
+
+.std-form-btn {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.std-form-hint {
+  text-align: center;
+  color: var(--secondary-text-color);
+}
+
+.subtle-info {
+  color: var(--secondary-text-color);
+}
+
+/* TaskList styles */
+.task-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* TaskCard styles */
+.task-card {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: #f9f9f9;
+}
+
+.task-card h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.task-card p {
+  margin: 0.5rem 0;
+}
+
+.task-card small {
+  color: #666;
+}
+
+
+
+.task-column {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.task-column h2 {
+  text-align: center;
+}
+
+.form-container {
+  margin-bottom: 2rem;
+}
+
+.form-container input,
+.form-container textarea,
+.form-container select {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-container button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form-container button:hover {
+  background-color: #45a049;
+}
+
+.form-container {
+  margin-bottom: 2rem;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.form-container input,
+.form-container textarea,
+.form-container select {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-container button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form-container button:hover {
+  background-color: #45a049;
+}
+
+.show-form-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.show-form-button:hover {
+  background-color: #45a049;
+}
+
+.task-board {
+  display: flex;
+  justify-content: space-between;
+}
+
+.task-column {
+  width: 30%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.task-column select {
+  width: 100%;
+  margin-bottom: 10px;
+}
+>>>>>>> frontend:frontend/src/styles/app.css

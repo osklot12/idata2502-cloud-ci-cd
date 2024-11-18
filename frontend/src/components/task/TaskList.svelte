@@ -1,6 +1,11 @@
 <script>
     import TaskCard from './TaskCard.svelte';
-  
+    import { isAuthenticated } from '../../stores/authStore.js';
+
+    $: if (!$isAuthenticated) {
+      window.location.hash = '#/';
+    }
+
     //Test context
     let tasks = [
       { title: 'Task 1', description: 'Description of Task 1', dueDate: '2024-11-08', status: 'pending', assignedTo: 'John Doe', id: 1 },

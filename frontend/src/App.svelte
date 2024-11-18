@@ -1,10 +1,23 @@
 <script>
-  import TaskList from './components/TaskList.svelte';
+  import Router from 'svelte-spa-router';
+  import { routes } from './utils/routes.js';
+  import { isAuthenticated } from './stores/authStore';
+
+  $: if ($isAuthenticated) {
+    // redirect to /tasks if authenticated
+    window.location.hash = '#/tasks';
+  } else {
+    // redirect to login if not authenticated
+    window.location.hash = '#/auth/login';
+  }
 </script>
 
+<<<<<<< HEAD
 <style src="./app.css"></style>
 
+=======
+>>>>>>> frontend
 <main>
-  <h1>My Tasks</h1>
-  <TaskList />
+  <Router {routes} />
 </main>
+

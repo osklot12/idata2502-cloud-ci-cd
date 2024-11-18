@@ -1,5 +1,6 @@
 package ntnu.idata2502.backend.services;
 
+import ntnu.idata2502.backend.dto.TaskRequest;
 import ntnu.idata2502.backend.entities.Task;
 
 import java.util.List;
@@ -23,19 +24,19 @@ public interface TaskService {
     /**
      * Creates a new task.
      *
-     * @param task the task to create
+     * @param request the requested task to create
      * @return the created task
      */
-    Task createTask(Task task);
+    Task createTask(TaskRequest request);
 
     /**
      * Updates an existing task.
      *
      * @param id the task id
-     * @param updatedTask the updated task
+     * @param request the updated task
      * @return the updated task
      */
-    Task updateTaskById(Long id, Task updatedTask);
+    Task updateTaskById(Long id, TaskRequest request);
 
     /**
      * Deletes an existing task.

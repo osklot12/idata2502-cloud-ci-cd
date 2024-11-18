@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 import { render, fireEvent } from '@testing-library/svelte';
 import TaskList from '../../components/TaskList.svelte';
 import { expect, test } from 'vitest';
 import { vi } from 'vitest';
+=======
+import { render } from '@testing-library/svelte';
+import TaskList from '$components/task/TaskList.svelte';
+import { test, expect } from 'vitest';
+>>>>>>> frontend
 
 test('renders TaskList component', () => {
   const { getByText } = render(TaskList);
