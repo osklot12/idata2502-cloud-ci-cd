@@ -27,7 +27,7 @@
         <p class="std-form-element std-form-hint">{errorMessage}</p>
     {/if}
 </form>
-<p>
+<p class="subtle-info">
     Not a user?
     <a href="#/auth/register">Register here</a>
 </p>

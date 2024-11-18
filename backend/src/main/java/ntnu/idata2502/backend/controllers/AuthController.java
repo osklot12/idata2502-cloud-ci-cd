@@ -63,6 +63,7 @@ public class AuthController {
 
             response.put("userId", newUser.getId().toString());
             response.put("token", token);
+            response.put("username", newUser.getUsername());
             response.put("message", "User registered successfully.");
             return ResponseEntity.ok(response);
         } catch (UserRegistrationException e) {
@@ -97,6 +98,7 @@ public class AuthController {
 
             response.put("userId", user.get().getId().toString());
             response.put("token", token);
+            response.put("username", user.get().getUsername());
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             response.put("error", "Incorrect username or password.");

@@ -5,6 +5,8 @@ export const token = writable(localStorage.getItem('token') || null);
 
 export const userId = writable(localStorage.getItem('userId') || null);
 
+export const username = writable(localStorage.getItem('username') || null);
+
 // store to track if the user is authenticated
 export const isAuthenticated = writable(!!localStorage.getItem('token'));
 
@@ -51,6 +53,14 @@ userId.subscribe((value) => {
     }
 });
 
+username.subscribe((value) => {
+    if (value) {
+        localStorage.setItem('username', value);
+    } else {
+        localStorage.removeItem('username');
+    }
+});
+
 // helper functions for setting and clearing the token
 export function setToken(newToken) {
     token.set(newToken);
@@ -66,4 +76,12 @@ export function setUserId(newUserId) {
 
 export function clearUserId() {
     userId.set(null);
+}
+
+export function setUsername(newUsername) {
+    username.set(newUsername);
+}
+
+export function clearUsername() {
+    username.set(null);
 }

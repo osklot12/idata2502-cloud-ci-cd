@@ -1,19 +1,19 @@
 <script>
+    import {tasks} from "../../stores/taskStore.js";
     import { onMount } from 'svelte';
     import Task from './Task.svelte';
     import TaskModel from '../../classes/Task.js';
     import { getTasks } from '../../services/api/api.js';
 
-    export let title = "Task List";
-    export let tasks = [];
+    $: taskList = $tasks;
 
     async function fetchTasks() {
         try {
-            const fetchedTasks = await getTasks(); // Fetch tasks and set them to the tasks array
-            tasks = fetchedTasks.map(taskData => new TaskModel(taskData))
+            const fetchedTasks = await getTasks(); // Fetch tasks from the backend
+            tasks.set(fetchedTasks.map(taskData => new TaskModel(taskData))); // Update the shared store
         } catch (error) {
             console.error('Error fetching tasks:', error);
-            // Optional: display an error message to the user
+            // Optional: Display an error message to the user
         }
     }
 
@@ -21,16 +21,8 @@
 </script>
 
 <div class="task-scroll">
-    <div class="task-scroll-header">
-        <h3 class="task-scroll-title">
-            {title}
-        </h3>
-        <div>
-
-        </div>
-    </div>
     <div class="task-scroll-list">
-        {#each tasks as task}
+        {#each taskList as task}
             <Task {task}/>
         {/each}
     </div>
@@ -39,21 +31,22 @@
 <style>
     .task-scroll {
         color: var(--text-color);
-    }
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        align-items: center;
+        width: calc(100% - 100px);
 
-    .task-scroll-header {
-        font-size: 1.3rem;
-        padding: 5px;
-    }
-
-    .task-scroll-title {
-        font-weight: bold;
-        margin: 0;
-        border-bottom: 1px solid var(--secondary-text-color);
+        padding: 50px;
     }
 
     .task-scroll-list {
         display: flex;
         flex-direction: column;
+        align-items: center;
+        flex: 1;
+        width: 100%;
+        max-width: 400px;
+        gap: 20px;
     }
 </style>

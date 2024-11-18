@@ -5,8 +5,11 @@
   --second-accent-color: #C62E2E;
   --background-color: #fafafa;
 
-  --text-color: #202020;
-  --secondary-text-color: rgba(32, 32, 32, 0.78);
+  --main-grey: #191919;
+  --secondary-grey: #242427;
+
+  --text-color: white;
+  --secondary-text-color: rgba(255, 255, 255, 0.87);
 }
 
 /* App styles */
@@ -19,13 +22,12 @@
 
 body {
   margin: 0;
-  background-color: var(--background-color);
+  background-color: var(--main-grey);
 }
 
 main {
-  margin: 0 auto;
-  padding: 1rem;
-  min-height: calc(100vh - 2rem);
+  margin: 0;
+  min-height: 100vh;
   display: flex;
 }
 
@@ -51,27 +53,55 @@ button:hover {
   margin: 5px;
   padding: 10px;
   border: none;
-  font-size: 16px;
+  font-size: 1rem;
+  color: var(--text-color);
 }
 
 .std-form-input {
   outline: none;
   transition: background-color 0.3s ease;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.26);
-  background-color: var(--background-color);
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: 1px solid var(--secondary-text-color);
+  background-color: transparent;
 }
 
 .std-form-input:focus {
-  border-bottom: 1px solid rgb(0, 0, 0);
+  border-bottom: 1px solid var(--text-color);
+}
+
+.std-text-area {
+  outline: none;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid var(--secondary-text-color);
+  background-color: transparent;
+  resize: vertical;
+}
+
+.std-form-datepicker {
+  color: var(--text-color);
+  outline: none;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: 1px solid var(--secondary-text-color);
+  font-size: 1rem;
+  background-color: transparent;
 }
 
 .std-form-btn {
-  background-color: var(--second-accent-color);
+  background-color: var(--primary-color);
   color: white;
 }
 
 .std-form-hint {
   text-align: center;
+  color: var(--secondary-text-color);
+}
+
+.subtle-info {
+  color: var(--secondary-text-color);
 }
 
 /* TaskList styles */

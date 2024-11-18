@@ -1,19 +1,22 @@
 <script>
     import {userId} from "../../stores/authStore.js";
-    import {updateTask} from "../../services/api/api.js";
+    import {updateTask, getUserByUsername} from "../../services/api/api.js";
+    import {formatDateToStr} from "../../utils/formatter.js";
     import Task from "../../classes/Task.js";
+    import User from "../../classes/User.js";
+    import AssigneeHandler from "./AssigneeHandler.svelte";
 
     export let task;
 
     let isMinimized = true;
     let isEditing = false;
-    let currentUserId = $userId;
+
+    $: canEdit = String(task.creator.id) === String($userId);
 
     let updatedHeader = task.header;
     let updatedDescription = task.description;
-    let updatedDeadline = task.deadline
-        ? task.deadline.toISOString().split("T")[0]
-        : "";
+    let updatedDeadline = formatDateToStr(task.deadline);
+    let updatedAssignees = task.assignees;
 
     let isLoading = false;
     let errorMessage = "";
@@ -28,9 +31,8 @@
         if (!isEditing) {
             updatedHeader = task.header;
             updatedDescription = task.description;
-            updatedDeadline = task.deadline
-                ? task.deadline.toISOString().split("T")[0]
-                : "";
+            updatedDeadline = formatDateToStr(task.deadline);
+            updatedAssignees = task.assignees;
             errorMessage = "";
         }
     }
@@ -40,11 +42,14 @@
         errorMessage = "";
 
         try {
+            const assigneeIds = updatedAssignees.map(assignee => assignee.id);
+
             const updatedTask = {
                 ...task,
                 header: updatedHeader,
                 description: updatedDescription,
-                deadline: updatedDeadline
+                deadline: formatDateToStr(updatedDeadline),
+                assigneeIds
             };
 
             console.log("Updated Task Payload:", updatedTask);
@@ -60,6 +65,25 @@
             isLoading = false;
         }
     }
+
+    async function addAssignee(username) {
+        try {
+            const userData = await getUserByUsername(username);
+            const newUser = new User(userData);
+            if (!updatedAssignees.some(assignee => assignee.id === newUser.id)) {
+                updatedAssignees = [...updatedAssignees, newUser];
+            } else {
+                errorMessage = `User "${username}" is already an assignee.`;
+            }
+        } catch (error) {
+            errorMessage = error.message || `Failed to add user "${username}".`;
+            console.error(errorMessage);
+        }
+    }
+
+    function removeAssignee(assigneeToRemove) {
+        updatedAssignees = updatedAssignees.filter(assignee => assignee.id !== assigneeToRemove.id);
+    }
 </script>
 
 <div class="task-container">
@@ -74,7 +98,7 @@
             {task.header}
         {/if}
         <div class="task-header-options">
-            {#if String(task.creator.id) === String(currentUserId)}
+            {#if canEdit}
                 {#if isEditing}
                     <button class="task-btn" on:click={saveTask} disabled={isLoading}>
                         <span class="material-symbols-outlined">check</span>
@@ -112,8 +136,8 @@
             {#if isEditing}
                 <input
                         type="date"
-                        bind:value={updatedDeadline}
                         class="task-deadline-input"
+                        bind:value={updatedDeadline}
                 />
             {:else}
                 <p class="task-deadline">
@@ -136,24 +160,28 @@
                 {task.getFormattedCreatedAt()}
             </p>
         </div>
-        <div class="task-assignees-wrap">
-            {#each task.assignees as assignee}
-                <div class="task-assignee">
-                    {assignee.getDisplayName()}
-                </div>
-            {/each}
-        </div>
+        <AssigneeHandler
+                assignees={updatedAssignees}
+                canEdit={isEditing}
+                onAdd={addAssignee}
+                onRemove={removeAssignee}
+        />
         {#if errorMessage}
             <p class="error-message">{errorMessage}</p>
         {/if}
     {/if}
+    <div class="task-seperator">
+
+    </div>
 </div>
 
 <style>
     .task-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
         padding: 5px;
         color: var(--text-color);
-        max-width: 400px;
     }
 
     .task-header {
@@ -161,6 +189,7 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+        gap: 20px;
 
         margin: 0 0 10px 0;
         padding: 10px;
@@ -168,11 +197,13 @@
         font-weight: bold;
         text-shadow: 2px 1px 0 rgba(0, 0, 0, 0.22);
 
-        background-color: var(--accent-color);
-        color: white;
+        color: var(--text-color);
     }
 
     .task-title-input {
+        background-color: rgba(255, 255, 255, 0.04);
+        color: var(--text-color);
+
         border: none;
         font-size: 1.1rem;
         outline: none;
@@ -209,12 +240,13 @@
 
     .task-description-input {
         resize: vertical;
+        background-color: rgba(255, 255, 255, 0.04);
+        color: var(--text-color);
 
-        width: calc(100% - 20px);
+        width: calc(100% - 40px);
 
         font-size: 1rem;
-        padding: 10px;
-        margin: 0 0 10px 0;
+        margin: 10px;
 
         line-height: 1.5rem;
 
@@ -228,10 +260,8 @@
         justify-content: space-around;
         align-items: center;
 
-        margin: 0 10px 10px 10px;
+        margin: 10px;
         padding: 10px;
-
-        border-bottom: 1px solid var(--text-color);
     }
 
     .task-deadline {
@@ -239,6 +269,9 @@
     }
 
     .task-deadline-input {
+        background-color: rgba(255, 255, 255, 0.04);
+        color: var(--text-color);
+
         border: 1px solid var(--secondary-text-color)
     }
 
@@ -266,21 +299,8 @@
         margin: 0 10px;
     }
 
-    .task-assignees-wrap {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 15px;
-
-        padding: 10px;
-        color: var(--secondary-text-color)
-    }
-
-    .task-assignee {
-        text-align: center;
-        padding: 5px 10px;
-        border-radius: 20px;
-        border: 1px solid var(--secondary-text-color);
-
-        margin: 0 auto;
+    .task-seperator {
+        border-bottom: 1px solid var(--secondary-text-color);
+        margin: 10px;
     }
 </style>

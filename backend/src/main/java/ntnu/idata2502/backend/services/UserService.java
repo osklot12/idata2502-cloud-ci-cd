@@ -18,7 +18,7 @@ public interface UserService {
      * Finds a user by their username.
      *
      * @param username the username to search for
-     * @return an Optional containing the user if found, or empty otherwise
+     * @return an Optional containing the user if found, empty otherwise
      */
     public Optional<User> findUserByUsername(String username);
 }

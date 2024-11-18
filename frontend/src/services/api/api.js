@@ -1,5 +1,5 @@
 import {get} from 'svelte/store'
-import {token, setToken, clearToken, setUserId, clearUserId} from '../../stores/authStore.js'
+import {token, setToken, clearToken, setUserId, clearUserId, setUsername, clearUsername} from '../../stores/authStore.js'
 
 const API_BASE_URL = "http://localhost:8080/api"
 
@@ -43,22 +43,24 @@ function handleUserAuthorization(data) {
         throw new Error("The response does not contain authorization information");
     }
 
-    setUserAuthInfo(data.token, data.userId);
+    setUserAuthInfo(data.token, data.userId, data.username);
 }
 
-function setUserAuthInfo(token, userId) {
+function setUserAuthInfo(token, userId, username) {
     setToken(token);
     setUserId(userId);
+    setUsername(username)
 }
 
 function responseContainsAuthInfo(data) {
-    return data.token && data.userId;
+    return data.token && data.userId && data.username;
 }
 
 // function to log out the user
 export function logout() {
     clearToken();
     clearUserId();
+    clearUsername();
 }
 
 // function to fetch tasks
@@ -103,8 +105,20 @@ export async function updateTask(task) {
 async function handleResponse(response, defaultErrMsg = "Request failed") {
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || defaultErrMsg);
+        throw new Error(errorData.error || defaultErrMsg);
     }
 
     return await response.json();
+}
+
+// function to get user by username
+export async function getUserByUsername(username) {
+    const jwtToken = get(token);
+
+    const response = await fetch(`${API_BASE_URL}/users/${username}`, {
+        method: "GET",
+        headers: createHeaders({"Authorization": `Bearer ${jwtToken}`})
+    });
+
+    return await handleResponse(response, "Cannot find user with username: " + username);
 }
