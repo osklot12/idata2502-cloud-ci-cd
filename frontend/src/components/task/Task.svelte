@@ -1,7 +1,8 @@
 <script>
     import {userId} from "../../stores/authStore.js";
-    import {updateTask, getUserByUsername} from "../../services/api/api.js";
+    import {updateTask, getUserByUsername, deleteTask} from "../../services/api/api.js";
     import {formatDateToStr} from "../../utils/formatter.js";
+    import {tasks} from "../../stores/taskStore.js"
     import Task from "../../classes/Task.js";
     import User from "../../classes/User.js";
     import AssigneeHandler from "./AssigneeHandler.svelte";
@@ -66,6 +67,21 @@
         }
     }
 
+    async function removeTask() {
+        isLoading = true;
+        errorMessage = "";
+
+        try {
+            console.log(tasks);
+            await deleteTask(task);
+            tasks.update(currentTasks => currentTasks.filter(t => t.id !== task.id));
+        } catch (error) {
+            errorMessage = error.message || "Failed to delete task.";
+        } finally {
+            isLoading = false;
+        }
+    }
+
     async function addAssignee(username) {
         try {
             const userData = await getUserByUsername(username);
@@ -104,12 +120,12 @@
                         <span class="material-symbols-outlined">check</span>
                     </button>
                 {/if}
-                <button class="task-btn" on:click={toggleEditMode}>
+                <button class="task-btn" on:click={toggleEditMode} disabled={isLoading}>
                         <span class="material-symbols-outlined">
                             { isEditing ? "close" : "edit" }
                         </span>
                 </button>
-                <button class="task-btn">
+                <button class="task-btn" on:click={removeTask} disabled={isLoading}>
                     <span class="material-symbols-outlined">delete</span>
                 </button>
             {/if}

@@ -35,7 +35,7 @@
         flex-direction: column;
         flex: 1;
         align-items: center;
-        width: calc(100% - 100px);
+
 
         padding: 50px;
     }
@@ -46,7 +46,8 @@
         align-items: center;
         flex: 1;
         width: 100%;
-        max-width: 400px;
+
+        max-width: 600px;
         gap: 20px;
     }
 </style>

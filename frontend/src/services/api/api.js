@@ -98,7 +98,19 @@ export async function updateTask(task) {
         body: JSON.stringify(task)
     });
 
-    return await handleResponse(response, "Cannot update task " + task.id);
+    return await handleResponse(response, "Cannot update task with id " + task.id);
+}
+
+// function to delete an existing task
+export async function deleteTask(task) {
+    const jwtToken = get(token);
+
+    const response = await fetch(`${API_BASE_URL}/tasks/${task.id}`, {
+        method: "DELETE",
+        headers: createHeaders({"Authorization": `Bearer ${jwtToken}`})
+    });
+
+    return await handleResponse(response, "Cannot delete task with id " + task.id);
 }
 
 // handles the response of a request

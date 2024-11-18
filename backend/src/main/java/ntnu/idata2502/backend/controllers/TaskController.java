@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -44,8 +46,12 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Task> deleteTask(@PathVariable long id) {
+    public ResponseEntity<?> deleteTask(@PathVariable long id) {
+        Map<String, Object> response = new HashMap<>();
         taskService.deleteTaskById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        response.put("message", "Task deleted successfully");
+        response.put("taskId", id);
+        return ResponseEntity.ok(response);
     }
 }
