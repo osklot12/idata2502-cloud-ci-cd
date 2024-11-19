@@ -3,9 +3,9 @@ name: Revert Main on Failure
 on:
   workflow_run:
     workflows:
-      - unitTests.yml
-      - build.yml
-      - deploy.yml
+      - Build and Push Containers
+      - Unit tests
+      - Deploy Infrastructure and Application
     types:
       - completed
 
