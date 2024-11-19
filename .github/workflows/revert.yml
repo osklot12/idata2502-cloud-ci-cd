@@ -1,0 +1,45 @@
+name: Revert Main on Failure
+
+on:
+  workflow_run:
+    workflows:
+      - unitTests.yml
+      - build.yml
+      - deploy.yml
+    types:
+      - completed
+
+jobs:
+  revert-main:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: main  # Ensures we're working on the main branch
+
+      # Step 2: Fetch history to identify the last successful commit
+      - name: Fetch commit history
+        run: git fetch --depth=50
+
+      # Step 3: Identify the last successful commit
+      - name: Find last successful commit
+        id: find_commit
+        run: |
+          LAST_GOOD_COMMIT=$(git log --grep "CI Passed" --pretty=format:'%H' -n 1)
+          echo "last_successful_commit=$LAST_GOOD_COMMIT" >> $GITHUB_ENV
+          echo "::set-output name=last_commit::$LAST_GOOD_COMMIT"
+
+      # Step 4: Revert the main branch to the last successful commit
+      - name: Reset and force push main
+        run: |
+          if [ -z "${{ steps.find_commit.outputs.last_commit }}" ]; then
+            echo "No successful commit found. Exiting."
+            exit 1
+          fi
+          git reset --hard ${{ steps.find_commit.outputs.last_commit }}
+          git push origin main --force
+
