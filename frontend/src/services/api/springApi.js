@@ -7,8 +7,8 @@ import {
     clearUserId,
     setUsername,
     clearUsername
-} from './stores/authStore.js';
-import {ApiInterface} from "./services/api/apiInterface.js";
+} from '../../stores/authStore.js';
+import {ApiInterface} from "./apiInterface.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 

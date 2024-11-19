@@ -1,7 +1,7 @@
-import {ApiInterface} from "./services/api/apiInterface.js";
-import {token, userId, username, setToken, setUserId, setUsername, clearToken, clearUserId, clearUsername} from "./stores/authStore.js";
-import Task from "./classes/Task.js"
-import User from "./classes/User.js"
+import {ApiInterface} from "./apiInterface.js";
+import {token, userId, username, setToken, setUserId, setUsername, clearToken, clearUserId, clearUsername} from "../../stores/authStore.js";
+import Task from "../../classes/Task.js"
+import User from "../../classes/User.js"
 
 // generates a twt token for testing purposes
 function generateMockToken(expiryInSeconds = 24 * 60 * 60) {

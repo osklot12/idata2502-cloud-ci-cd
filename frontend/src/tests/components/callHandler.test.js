@@ -1,8 +1,8 @@
 import {describe, it, expect} from "vitest";
 import {token, userId} from "../../stores/authStore.js";
 import {get} from "svelte/store";
-import {CallHandler} from "../../callHandler.js";
-import {TestApi} from "../../testApi.js";
+import {CallHandler} from "../../services/callHandler.js";
+import {TestApi} from "../../services/api/testApi.js";
 
 describe("Tests logging in", () => {
     it("should set the token", async () => {
