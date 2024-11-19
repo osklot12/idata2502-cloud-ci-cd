@@ -1,7 +1,7 @@
 import {get} from 'svelte/store'
 import {token, setToken, clearToken, setUserId, clearUserId, setUsername, clearUsername} from '../../stores/authStore.js'
 
-const API_BASE_URL = "http://localhost:8080/api"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
 const DEFAULT_HEADERS = {"Content-Type": "application/json"}
 

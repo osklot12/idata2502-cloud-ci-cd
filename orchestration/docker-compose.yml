@@ -16,6 +16,7 @@ services:
   backend:
     image: osklot12/spring-backend
     environment:
+      SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tomorrow_db
       SPRING_DATASOURCE_USERNAME: trump
       SPRING_DATASOURCE_PASSWORD: not_harris

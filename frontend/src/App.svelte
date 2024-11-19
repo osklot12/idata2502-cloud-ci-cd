@@ -12,11 +12,8 @@
   }
 </script>
 
-<<<<<<< HEAD
 <style src="./app.css"></style>
 
-=======
->>>>>>> frontend
 <main>
   <Router {routes} />
 </main>

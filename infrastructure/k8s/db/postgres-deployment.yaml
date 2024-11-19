@@ -29,10 +29,31 @@ spec:
                   name: db-credentials
                   key: password
             - name: POSTGRES_DB
-              value: "tomorrow_db" # This will create the "tomorrow_db" database
+              value: "tomorrow_db"
           volumeMounts:
             - mountPath: "/var/lib/postgresql/data"
               name: postgres-storage
+          readinessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
