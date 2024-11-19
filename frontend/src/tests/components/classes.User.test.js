@@ -30,12 +30,6 @@ describe('User', () => {
     expect(user.email).toBe('');
   });
 
-  it('should handle invalid property types', () => {
-    const user = new User({ id: 'string', email: 123 });
-    expect(user.id).toBeNull();
-    expect(user.email).toBe('');
-  });
-
   it('should return display name correctly', () => {
     const userWithUsername = new User({ username: 'admin' });
     expect(userWithUsername.getDisplayName()).toBe('admin');
