@@ -1,5 +1,5 @@
 <script>
-    import { register } from "../../services/api/api.js";
+    import {api} from "../../main.js";
     import { isAuthenticated } from "../../stores/authStore.js";
 
     let username = '';
@@ -8,7 +8,7 @@
     let errorMessage = '';
 
     async function handleRegister() {
-        const result = await register(username, email, password);
+        const result = await api.register(username, email, password);
         if (result.success) {
             isAuthenticated.set(true);
             window.location.hash = '#/tasks'; // Redirect to task list after successful registration

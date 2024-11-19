@@ -1,6 +1,6 @@
 <script>
     import {userId} from "../../stores/authStore.js";
-    import {updateTask, getUserByUsername, deleteTask} from "../../services/api/api.js";
+    import {api} from "../../main.js";
     import {formatDateToStr} from "../../utils/formatter.js";
     import {tasks} from "../../stores/taskStore.js"
     import Task from "../../classes/Task.js";
@@ -54,7 +54,7 @@
             };
 
             console.log("Updated Task Payload:", updatedTask);
-            const response = await updateTask(updatedTask);
+            const response = await api.updateTask(updatedTask);
 
             task = new Task(response);
 
@@ -73,7 +73,7 @@
 
         try {
             console.log(tasks);
-            await deleteTask(task);
+            await api.deleteTask(task);
             tasks.update(currentTasks => currentTasks.filter(t => t.id !== task.id));
         } catch (error) {
             errorMessage = error.message || "Failed to delete task.";
@@ -84,7 +84,7 @@
 
     async function addAssignee(username) {
         try {
-            const userData = await getUserByUsername(username);
+            const userData = await api.getUserByUsername(username);
             const newUser = new User(userData);
             if (!updatedAssignees.some(assignee => assignee.id === newUser.id)) {
                 updatedAssignees = [...updatedAssignees, newUser];

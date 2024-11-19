@@ -1,5 +1,5 @@
 <script>
-    import { login } from "../../services/api/api.js"
+    import {api} from "../../main.js";
     import { isAuthenticated } from "../../stores/authStore.js";
 
     let username = '';
@@ -7,7 +7,7 @@
     let errorMessage = '';
 
     async function handleLogin() {
-        const result = await login(username, password);
+        const result = await api.login(username, password);
         if (result.success) {
             isAuthenticated.set(true);
             window.location.hash = '#/tasks'; // Redirect to task list after successful login

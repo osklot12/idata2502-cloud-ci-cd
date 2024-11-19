@@ -1,6 +1,6 @@
 <script>
     import AssigneeHandler from "./AssigneeHandler.svelte";
-    import {getUserByUsername, createTask} from "../../services/api/api.js";
+    import {api} from "../../main.js";
     import {formatDateToStr} from "../../utils/formatter.js"
     import {tasks} from "../../stores/taskStore.js";
     import User from "../../classes/User.js";
@@ -11,7 +11,7 @@
 
     async function addAssignee(username) {
         try {
-            const userData = await getUserByUsername(username);
+            const userData = await api.getUserByUsername(username);
             const newUser = new User(userData);
             if (!task.assignees.some(assignee => assignee.id === newUser.id)) {
                 task.assignees = [...task.assignees, newUser];
@@ -41,7 +41,7 @@
                 assigneeIds: task.assignees.map(assignee => assignee.id),
             };
 
-            const response = await createTask(newTaskPayload);
+            const response = await api.createTask(newTaskPayload);
 
             const createdTask = new Task(response);
 

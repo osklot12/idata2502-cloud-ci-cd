@@ -1,10 +1,10 @@
 <script>
     import TaskScroll from './TaskScroll.svelte'
     import Dashboard from "./Dashboard.svelte";
-    import {logout} from "../../services/api/api.js";
+    import {api} from "../../main.js";
 
     function handleLogout() {
-        logout();
+        api.logout();
     }
 </script>
 

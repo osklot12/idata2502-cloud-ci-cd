@@ -3,13 +3,13 @@
     import { onMount } from 'svelte';
     import Task from './Task.svelte';
     import TaskModel from '../../classes/Task.js';
-    import { getTasks } from '../../services/api/api.js';
+    import {api} from "../../main.js";
 
     $: taskList = $tasks;
 
     async function fetchTasks() {
         try {
-            const fetchedTasks = await getTasks(); // Fetch tasks from the backend
+            const fetchedTasks = await api.getTasks(); // Fetch tasks from the backend
             tasks.set(fetchedTasks.map(taskData => new TaskModel(taskData))); // Update the shared store
         } catch (error) {
             console.error('Error fetching tasks:', error);
