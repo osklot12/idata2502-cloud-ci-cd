@@ -38,7 +38,7 @@ resource "google_container_cluster" "tomorrow_cluster_prod" {
   }
 
   remove_default_node_pool = true
-  initial_node_count       = 1
+  initial_node_count = 1
 
   # configuring network for cluster
   network = google_compute_network.network.id
@@ -57,15 +57,11 @@ resource "google_container_node_pool" "default_pool" {
   node_config {
     machine_type = var.machine_type
 
+    enable_external_ips = false
+
     # setting disk usage configurations
     disk_type = var.node_disk_type
     disk_size_gb = var.node_disk_size
-
-    # disabling external ips for the nodes
-    tags = ["no-external-ip"]
-    metadata = {
-      "disable-legacy-endpoints" = "true"
-    }
 
     # setting label
     labels = {
