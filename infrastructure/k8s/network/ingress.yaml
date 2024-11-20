@@ -1,16 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
+
 metadata:
   name: app-ingress
   annotations:
+    # links the ingress to a pre-configured global static ip in google cloud
     kubernetes.io/ingress.global-static-ip-name: ingress-static-ip
+
+    # rewrites incoming request paths to '/' if no specific rule matches
     nginx.ingress.kubernetes.io/rewrite-target: /
+
 spec:
+  # specifies the ingress controller to use (nginx in this case)
   ingressClassName: nginx
+
+  # rules for routing incoming traffic
   rules:
-    - host: app.local
-      http:
+    - http:
         paths:
+          # routes requests with the root path ('/') to the frontend service
           - path: /
             pathType: Prefix
             backend:
@@ -18,6 +26,8 @@ spec:
                 name: frontend-service
                 port:
                   number: 80
+
+          # routes requests with '/api' to the backend service
           - path: /api
             pathType: Prefix
             backend:

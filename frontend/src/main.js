@@ -2,10 +2,9 @@ import { mount } from 'svelte'
 import './app.css'
 import App from './App.svelte'
 import {CallHandler} from "./callHandler.js";
-import {createApi} from "./apiFactory.js";
+import {SpringApi} from "./springApi.js";
 
-const apiInstance = createApi();
-const callHandler = new CallHandler(apiInstance);
+const callHandler = new CallHandler(new SpringApi());
 
 export const api = callHandler;
 

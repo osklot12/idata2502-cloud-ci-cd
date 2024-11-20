@@ -81,52 +81,52 @@ resource "google_container_cluster" "tomorrow_k8s_cluster" {
 
 # Frontend Deployment and Service
 resource "kubernetes_manifest" "frontend_deployment" {
-  manifest = yamldecode(file("${path.module}/../../../k8s/frontend/frontend-deployment.yaml"))
+  manifest = yamldecode(file("${path.module}/../../k8s/frontend/frontend-deployment.yaml"))
   depends_on = [google_container_cluster.tomorrow_k8s_cluster]
 }
 
 resource "kubernetes_manifest" "frontend_service" {
-  manifest = yamldecode(file("${path.module}/../../../k8s/frontend/frontend-service.yaml"))
+  manifest = yamldecode(file("${path.module}/../../k8s/frontend/frontend-service.yaml"))
   depends_on = [google_container_cluster.tomorrow_k8s_cluster]
 }
 
 # Backend Deployment and Service
 resource "kubernetes_manifest" "backend_deployment" {
-  manifest = yamldecode(file("${path.module}/../../../k8s/backend/backend-deployment.yaml"))
+  manifest = yamldecode(file("${path.module}/../../k8s/backend/backend-deployment.yaml"))
   depends_on = [google_container_cluster.tomorrow_k8s_cluster]
 }
 
 resource "kubernetes_manifest" "backend_service" {
-  manifest = yamldecode(file("${path.module}/../../../k8s/backend/backend-service.yaml"))
+  manifest = yamldecode(file("${path.module}/../../k8s/backend/backend-service.yaml"))
   depends_on = [google_container_cluster.tomorrow_k8s_cluster]
 }
 
 # PostgreSQL Deployment and Service
 resource "kubernetes_manifest" "db_deployment" {
-  manifest = yamldecode(file("${path.module}/../../../k8s/db/postgres-deployment.yaml"))
+  manifest = yamldecode(file("${path.module}/../../k8s/db/postgres-deployment.yaml"))
   depends_on = [google_container_cluster.tomorrow_k8s_cluster]
 }
 
 resource "kubernetes_manifest" "db_service" {
-  manifest = yamldecode(file("${path.module}/../../../k8s/db/postgres-service.yaml"))
+  manifest = yamldecode(file("${path.module}/../../k8s/db/postgres-service.yaml"))
   depends_on = [google_container_cluster.tomorrow_k8s_cluster]
 }
 
 # Persistent Volume Claim for PostgreSQL
 resource "kubernetes_manifest" "postgres_pvc" {
-  manifest = yamldecode(file("${path.module}/../../../k8s/storage/postgres-pvc.yaml"))
+  manifest = yamldecode(file("${path.module}/../../k8s/storage/postgres-pvc.yaml"))
   depends_on = [google_container_cluster.tomorrow_k8s_cluster]
 }
 
 # Secrets for Database Credentials
 resource "kubernetes_manifest" "db_credentials" {
-  manifest = yamldecode(file("${path.module}/../../../k8s/db/db-credentials.yaml"))
+  manifest = yamldecode(file("${path.module}/../../k8s/secrets/db-credentials.yaml"))
   depends_on = [google_container_cluster.tomorrow_k8s_cluster]
 }
 
 # Ingress
 resource "kubernetes_manifest" "ingress" {
-  manifest = yamldecode(templatefile("${path.module}/../../../k8s/network/ingress.yaml", {
+  manifest = yamldecode(templatefile("${path.module}/../../k8s/network/ingress.yaml", {
     static_ip = google_compute_address.ingress_static_ip.address
   }))
   depends_on = [google_container_cluster.tomorrow_k8s_cluster]

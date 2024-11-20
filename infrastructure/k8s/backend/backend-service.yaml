@@ -1,8 +1,12 @@
 apiVersion: v1
 kind: Service
+
 metadata:
+  # the name of the service, used for referencing within the cluster
   name: backend-service
+
 spec:
+  # specifies the pods that this service targets, based on labels
   selector:
     app: backend
   ports:

@@ -1,11 +1,37 @@
 import {ApiInterface} from "./services/api/apiInterface.js";
+import {token, userId, username, setToken, setUserId, setUsername, clearToken, clearUserId, clearUsername} from "./stores/authStore.js";
 import Task from "./classes/Task.js"
 import User from "./classes/User.js"
+
+// generates a twt token for testing purposes
+function generateMockToken(expiryInSeconds = 24 * 60 * 60) {
+    const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+    const payload = btoa(
+        JSON.stringify({ exp: Math.floor(Date.now() / 1000) + expiryInSeconds })
+    );
+    const signature = "dummySignature";
+    return `${header}.${payload}.${signature}`;
+}
 
 export class TestApi extends ApiInterface {
     constructor() {
         super();
-        // Mock tasks
+        // generating a new mock token
+        this.mockToken = generateMockToken();
+
+        // generating a new expired mock token
+        this.mockTokenExpired = generateMockToken(-60);
+
+        // setting a mock id
+        this.mockId = 123;
+
+        // setting a mock username
+        this.mockUsername = "testUsername";
+
+        // setting a mock password
+        this.mockPassword = "testPassword";
+
+        // mock tasks
         this.mockTasks = [
             new Task({
                 id: 1,
@@ -31,7 +57,7 @@ export class TestApi extends ApiInterface {
             }),
         ];
 
-        // Mock user
+        // mock user
         this.mockUser = new User({
             id: 1,
             username: "mockUser",
@@ -40,7 +66,11 @@ export class TestApi extends ApiInterface {
     }
 
     async login(username, password) {
-        if (username === "mockUser" && password === "password") {
+        if (username === this.mockUsername && password === this.mockPassword) {
+            setToken(this.mockToken);
+            setUserId(this.mockId);
+            setUsername(this.mockUsername);
+
             return {
                 success: true,
                 message: "Login successful",
@@ -68,6 +98,7 @@ export class TestApi extends ApiInterface {
     }
 
     logout() {
+
         console.log("Mock logout called");
     }
 

@@ -1,40 +1,67 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
+  # Name of the deployment
   name: backend-deployment
+
 spec:
+  # Number of pod replicas to maintain
   replicas: 3
+
+  # Matches pods labeled as "app: backend"
   selector:
     matchLabels:
       app: backend
+
+  # Template for creating pods
   template:
     metadata:
+      # Labels applied to pods created by this deployment
       labels:
         app: backend
+
     spec:
       containers:
         - name: backend
+
+          # Specifies the image to use for the container
           image: osklot12/spring-backend:latest
+
+          # Ensures the container always pulls the latest image version
           imagePullPolicy: Always
+
+          # Exposes the application port
           ports:
             - containerPort: 8080
+
+          # Environment variables for the backend application
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "prod"
+
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres-service:5432/tomorrow_db"
+
+            # References the database username from a Kubernetes Secret
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: db-credentials
                   key: username
+
+            # References the database password from a Kubernetes Secret
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: db-credentials
                   key: password
+
+            # Specifies the allowed CORS origin
             - name: CORS_ALLOWED_ORIGIN
               value: "http://10.99.196.112:80"
+
+          # Checks if the backend service is ready to accept traffic
           readinessProbe:
             httpGet:
               path: /actuator/health
@@ -43,6 +70,8 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+
+          # Checks if the backend service is healthy
           livenessProbe:
             httpGet:
               path: /actuator/health
@@ -51,10 +80,12 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+
+          # Resource requests and limits
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: "64Mi"
+              cpu: "50m"
             limits:
               memory: "512Mi"
               cpu: "500m"

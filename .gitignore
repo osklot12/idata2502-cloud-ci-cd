@@ -29,3 +29,10 @@ infrastructure/iac/terraform/*.tfvars
 infrastructure/iac/terraform/crash.log
 infrastructure/iac/terraform/*.tfplan
 infrastructure/iac/terraform/.terraform.lock.hcl
+
+infrastructure/terraform/.terraform/
+infrastructure/terraform/.terraform.lock.hcl
+infrastructure/terraform/*.tfstate
+infrastructure/terraform/*.tfstate.*
+infrastructure/terraform/crash.log
+infrastructure/terraform/*.tfplan
