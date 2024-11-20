@@ -32,7 +32,7 @@ import java.util.Collections;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${cors.allowed.origins:http://localhost:80}")
+    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:80}")
     private String allowedOrigins;
 
     @Autowired
