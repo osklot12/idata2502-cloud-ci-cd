@@ -24,22 +24,22 @@ variable "cluster_name" {
 }
 
 variable "frontend_ip_name_prod" {
-  default = "frontend-static-ip"
+  default = "frontend-static-ip-prod"
 }
 
 # network name
 variable "network_name" {
-  default = "tomorrow-network"
+  default = "tomorrow-network-prod"
 }
 
 # subnet name
 variable "subnet_name" {
-  default = "tomorrow-subnet-prod"
+  default = "tomorrow-subnet"
 }
 
 # pool name
 variable "pool_name" {
-  default = "default-pool"
+  default = "prod-pool"
 }
 
 # node environment label
@@ -55,4 +55,19 @@ variable "node_disk_type" {
 # the node disk size in gb
 variable "node_disk_size" {
   default = 30
+}
+
+# the initial node count for node pool
+variable "node_pool_initial_count" {
+  default = 3
+}
+
+# the min node pool count
+variable "node_pool_min_node_count" {
+  default = 1
+}
+
+# the max node pool count
+variable "node_pool_max_node_count" {
+  default = 5
 }

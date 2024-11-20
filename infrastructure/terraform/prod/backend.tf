@@ -2,6 +2,6 @@
 terraform {
   backend "gcs" {
     bucket = "tomorrow-terraform-bucket"
-    prefix = "terraform/state"
+    prefix = "terraform/prod/state"
   }
 }

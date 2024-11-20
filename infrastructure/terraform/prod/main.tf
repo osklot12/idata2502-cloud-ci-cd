@@ -6,7 +6,7 @@ provider "google" {
 
 # reserving a static ip for the frontend
 resource "google_compute_address" "frontend_static_ip" {
-  name = var.frontend_ip_name_prod
+  name   = var.frontend_ip_name_prod
   region = var.region
 }
 
@@ -29,9 +29,7 @@ resource "google_container_cluster" "tomorrow_cluster_prod" {
   location = var.region
 
   # enable vpc-native (ip aliasing)
-  ip_allocation_policy {
-    use_ip_aliases = true
-  }
+  ip_allocation_policy {}
 
   master_auth {
     client_certificate_config {
@@ -42,18 +40,8 @@ resource "google_container_cluster" "tomorrow_cluster_prod" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
-  # configuring nodes
-  node_config {
-    machine_type = var.machine_type
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-    ]
-  }
-
   # configuring network for cluster
-  network    = google_compute_network.network.id
+  network = google_compute_network.network.id
   subnetwork = google_compute_subnetwork.subnetwork.id
 
   # disables deletion protection for destroying efficiently
@@ -62,9 +50,9 @@ resource "google_container_cluster" "tomorrow_cluster_prod" {
 
 # creating a node pool for the cluster
 resource "google_container_node_pool" "default_pool" {
-  name       = var.pool_name
-  cluster    = google_container_cluster.tomorrow_cluster_prod.name
-  location   = var.region
+  name     = var.pool_name
+  cluster  = google_container_cluster.tomorrow_cluster_prod.name
+  location = var.region
 
   node_config {
     machine_type = var.machine_type
@@ -93,8 +81,8 @@ resource "google_container_node_pool" "default_pool" {
 
   # autoscaling settings
   autoscaling {
-    min_node_count = 1
-    max_node_count = 5
+    min_node_count = var.node_pool_min_node_count
+    max_node_count = var.node_pool_max_node_count
   }
 
   # management settings
@@ -104,6 +92,6 @@ resource "google_container_node_pool" "default_pool" {
   }
 
   # specify initial node count
-  initial_node_count = 3
+  initial_node_count = var.node_pool_initial_count
 }
 
