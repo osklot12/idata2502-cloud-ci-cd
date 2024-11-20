@@ -27,9 +27,21 @@ resource "google_compute_subnetwork" "subnetwork" {
 resource "google_container_cluster" "tomorrow_cluster_prod" {
   name     = var.cluster_name
   location = var.region
+  initial_node_count = var.cluster_initial_node_count
 
   # enable vpc-native (ip aliasing)
   ip_allocation_policy {}
+
+  # configuring network for cluster
+  network = google_compute_network.network.id
+  subnetwork = google_compute_subnetwork.subnetwork.id
+
+
+  private_cluster_config {
+    enable_private_nodes = true
+    # making master api public for convenient access: should not be used in real scenarios
+    enable_private_endpoint = false
+  }
 
   master_auth {
     client_certificate_config {
@@ -38,11 +50,6 @@ resource "google_container_cluster" "tomorrow_cluster_prod" {
   }
 
   remove_default_node_pool = true
-  initial_node_count = 1
-
-  # configuring network for cluster
-  network = google_compute_network.network.id
-  subnetwork = google_compute_subnetwork.subnetwork.id
 
   # disables deletion protection for destroying efficiently
   deletion_protection = false
@@ -56,8 +63,6 @@ resource "google_container_node_pool" "default_pool" {
 
   node_config {
     machine_type = var.machine_type
-
-    enable_external_ips = false
 
     # setting disk usage configurations
     disk_type = var.node_disk_type
@@ -91,3 +96,18 @@ resource "google_container_node_pool" "default_pool" {
   initial_node_count = var.node_pool_initial_count
 }
 
+# setting up a nat router
+resource "google_compute_router" "nat_router" {
+  name    = var.nat_router_name
+  network = google_compute_network.network.id
+  region  = var.region
+}
+
+# configuration for the nat router
+resource "google_compute_router_nat" "nat_config" {
+  name                               = var.nat_config_name
+  router                             = google_compute_router.nat_router.name
+  region                             = var.region
+  nat_ip_allocate_option             = "AUTO_ONLY" # Auto-allocate IP
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+}

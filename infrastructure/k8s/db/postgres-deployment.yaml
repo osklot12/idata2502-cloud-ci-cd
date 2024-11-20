@@ -49,16 +49,19 @@ spec:
             - name: POSTGRES_DB
               value: "tomorrow_db"
 
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+
           # mounts persistent storage for postgresql data
           volumeMounts:
-            - mountPath: "/var/lib/postgresql/data"
-              name: postgres-storage
+            - name: postgres-storage
+              mountPath: "/var/lib/postgresql/data"
 
           # checks if the postgresql service is ready to accept traffic
           readinessProbe:
             tcpSocket:
               port: 5432
-            initialDelaySeconds: 5
+            initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 3
@@ -67,7 +70,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 5432
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 3
@@ -75,10 +78,10 @@ spec:
           # resource requests and limits
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "50m"
+              memory: "512Mi"
+              cpu: "250m"
             limits:
-              memory: "1Gi"
+              memory: "2Gi"
               cpu: "1"
 
       # defines persistent storage for the postgresql database

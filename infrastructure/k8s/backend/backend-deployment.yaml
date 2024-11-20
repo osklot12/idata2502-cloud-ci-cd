@@ -58,8 +58,8 @@ spec:
                   key: password
 
             # Specifies the allowed CORS origin
-            - name: CORS_ALLOWED_ORIGIN
-              value: "http://10.99.196.112:80"
+            - name: CORS_ALLOWED_ORIGINS
+              value: "35.228.178.243"
 
           # Checks if the backend service is ready to accept traffic
           readinessProbe:
@@ -84,8 +84,8 @@ spec:
           # Resource requests and limits
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "50m"
+              memory: "128Mi"
+              cpu: "10m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "1"

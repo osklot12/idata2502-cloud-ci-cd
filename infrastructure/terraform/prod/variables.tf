@@ -15,12 +15,16 @@ variable "subnet_cidr" {
 
 # machine type for cluster
 variable "machine_type" {
-  default = "e2-micro"
+  default = "e2-small"
 }
 
 # cluster name
 variable "cluster_name" {
   default = "tomorrow-cluster-prod"
+}
+
+variable "cluster_initial_node_count" {
+  default = 1
 }
 
 variable "frontend_ip_name_prod" {
@@ -70,4 +74,19 @@ variable "node_pool_min_node_count" {
 # the max node pool count
 variable "node_pool_max_node_count" {
   default = 5
+}
+
+# name for the nat router
+variable "nat_router_name" {
+  default = "nat-router-prod"
+}
+
+# name for the nat router configurations
+variable "nat_config_name" {
+  default = "nat-config-prod"
+}
+
+# master ipv4 cidr block for nat router
+variable "nat_config_cidr" {
+  default = "10.0.1.0/28"
 }

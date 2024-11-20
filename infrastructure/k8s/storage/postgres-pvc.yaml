@@ -15,7 +15,4 @@ spec:
     # specifies the storage resources requested
     requests:
       # the amount of storage requested for the volume
-      storage: 1Gi
-
-  # specifies the storage class to use
-  storageClassName: standard
+      storage: 5Gi

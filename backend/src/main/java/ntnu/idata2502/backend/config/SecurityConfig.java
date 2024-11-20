@@ -32,8 +32,9 @@ import java.util.Collections;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:80}")
-    private String allowedOrigins;
+    private static final String CORS_ORIGIN_ENV_VAR = "CORS_ALLOWED_ORIGINS";
+
+    private static final String DEFAULT_CORS_ORIGIN = "http://localhost:80";
 
     @Autowired
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -79,7 +80,7 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
-                allowedOrigins.split(",")
+                getAllowedOrigins().split(",")
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
@@ -89,6 +90,16 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private String getAllowedOrigins() {
+        String allowedOrigins = System.getenv(CORS_ORIGIN_ENV_VAR);
+        if (allowedOrigins == null) {
+            allowedOrigins = DEFAULT_CORS_ORIGIN;
+        }
+
+        System.out.println(allowedOrigins);
+        return allowedOrigins;
     }
 }
 
