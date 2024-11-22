@@ -3,7 +3,7 @@ name: Deploy Infrastructure and Application
 on:
   workflow_run:
     workflows:
-      - Build and Push Containers
+
     types:
       - completed
 
