@@ -2,8 +2,10 @@ package ntnu.idata2502.backend.util;
 
 import ntnu.idata2502.backend.entities.User;
 import ntnu.idata2502.backend.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 
 /**
  * Utility class for authentication-related operations.
@@ -12,25 +14,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  * managing authentication dependencies. It acts as a bridge between the application's
  * security context and the persistence layer.</p>
  */
+@Component
 public class AuthUtil {
-
     /**
      * The repository for accessing user data. This is statically injected and
      * used to retrieve the authenticated user's details from the database.
      */
-    private static UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    /**
-     * Injects the {@link UserRepository} for accessing user data.
-     *
-     * <p>This method allows the application to set a {@link UserRepository} instance
-     * statically. This approach is used to enable {@code AuthUtil} to retrieve user
-     * details without being a Spring-managed bean itself.</p>
-     *
-     * @param userRepository the {@link UserRepository} to inject
-     */
-    public static void setUserRepository(UserRepository userRepository) {
-        AuthUtil.userRepository = userRepository;
+    @Autowired
+    public AuthUtil(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     /**
@@ -47,7 +41,7 @@ public class AuthUtil {
      * @return the authenticated {@link User}
      * @throws UsernameNotFoundException if the authenticated user is not found in the database
      */
-    public static User getCurrentUser() {
+    public User getCurrentUser() {
         // Retrieve the username of the currently authenticated user from the security context
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 

@@ -1,21 +1,35 @@
-# development configuration
+# Development configuration with embedded H2 database
 spring:
   config:
     activate:
       on-profile: dev
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/tomorrow_db
-    username: trump
-    password: not_harris
+    url: jdbc:h2:mem:testdb  # In-memory H2 database
+    driver-class-name: org.h2.Driver
+    username: sa            # Default H2 username
+    password:               # Default H2 password (empty)
+
   jpa:
+    hibernate:
+      ddl-auto: create-drop       # Automatically create and drop schema on app startup/shutdown
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: health
-    endpoint:
-      health:
-        show-details: always
+        dialect: org.hibernate.dialect.H2Dialect
+        show_sql: true            # Log SQL queries for debugging
+        format_sql: true          # Format SQL output for readability
+
+  sql:
+    init:
+      mode: always                # Executes schema.sql and data.sql on startup
+      continue-on-error: true     # Prevents startup failure if initialization errors occur
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG      # Log Hibernate SQL queries
+    org.springframework: INFO     # Reduce Spring framework log noise
+
+h2:
+  console:
+    enabled: true                 # Enable H2 console for debugging
+    path: /h2-console             # Accessible at /h2-console

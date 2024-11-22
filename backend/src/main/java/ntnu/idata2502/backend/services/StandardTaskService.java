@@ -25,6 +25,7 @@ import java.util.Optional;
 public class StandardTaskService implements TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final AuthUtil authUtil;
 
     /**
      * Constructs a {@link StandardTaskService}.
@@ -33,9 +34,10 @@ public class StandardTaskService implements TaskService {
      * @param userRepository the {@link UserRepository} for managing user data
      */
     @Autowired
-    public StandardTaskService(TaskRepository taskRepository, UserRepository userRepository) {
+    public StandardTaskService(TaskRepository taskRepository, UserRepository userRepository, AuthUtil authUtil) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.authUtil = authUtil;
     }
 
     /**
@@ -45,7 +47,7 @@ public class StandardTaskService implements TaskService {
      */
     @Override
     public List<Task> getAllTasks() {
-        User currentUser = AuthUtil.getCurrentUser();
+        User currentUser = authUtil.getCurrentUser();
         return taskRepository.findTasksByUserParticipation(currentUser.getId());
     }
 
@@ -77,11 +79,9 @@ public class StandardTaskService implements TaskService {
      */
     @Override
     public Task createTask(TaskRequest request) {
-        User creator = AuthUtil.getCurrentUser();
-
         Task task = createTaskFromRequest(request);
         task.setCreatedAt(LocalDateTime.now());
-        task.setCreator(creator);
+        task.setCreator(authUtil.getCurrentUser());
 
         return taskRepository.save(task);
     }
@@ -173,7 +173,7 @@ public class StandardTaskService implements TaskService {
      * @return true if the current user is the creator, false otherwise
      */
     private boolean isCreator(Task task) {
-        return task.getCreator().equals(AuthUtil.getCurrentUser());
+        return task.getCreator().equals(authUtil.getCurrentUser());
     }
 
     /**
@@ -183,6 +183,6 @@ public class StandardTaskService implements TaskService {
      * @return true if the current user is assigned, false otherwise
      */
     private boolean isAssigned(Task task) {
-        return task.getAssignees().contains(AuthUtil.getCurrentUser());
+        return task.getAssignees().contains(authUtil.getCurrentUser());
     }
 }
