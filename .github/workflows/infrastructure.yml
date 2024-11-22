@@ -39,7 +39,7 @@ jobs:
         working-directory: infrastructure/terraform/prod
 
       - name: Terraform Plan
-        run: terraform plan -var="environment=staging" -out=tfplan
+        run: terraform plan
         working-directory: infrastructure/terraform/prod
 
       - name: Upload Terraform Plan
