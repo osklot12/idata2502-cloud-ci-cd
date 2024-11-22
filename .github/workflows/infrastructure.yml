@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  validate-and-initialize-infrastructure:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,27 +32,27 @@ jobs:
 
       - name: Terraform Validate
         run: terraform validate
-        working-directory: infrastructure/iac/terraform/
+        working-directory: infrastructure/terraform/prod/
 
       - name: Terraform Init
         run: terraform init
-        working-directory: infrastructure/iac/terraform/
+        working-directory: infrastructure/terraform/prod/
 
       - name: Terraform Refresh
         run: terraform refresh
-        working-directory: infrastructure/iac/terraform/
+        working-directory: infrastructure/terraform/prod
 
       - name: Terraform Plan
         run: terraform plan -var="environment=staging" -out=tfplan
-        working-directory: infrastructure/iac/terraform/
+        working-directory: infrastructure/terraform/prod
 
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3
         with:
           name: terraform-plan
-          path: infrastructure/iac/terraform/tfplan
+          path: infrastructure/terraform/prod/tfplan
 
       - name: Terraform Apply with Approval
         if: github.event_name == 'workflow_dispatch'
         run: terraform apply tfplan
-        working-directory: infrastructure/iac/terraform/
+        working-directory: infrastructure/terraform/prod
