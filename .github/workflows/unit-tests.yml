@@ -69,9 +69,3 @@ jobs:
         run: |
           cd backend
           mvn test
-
-      - name: Archive Test Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: backend-test-results
-          path: target/surefire-reports
