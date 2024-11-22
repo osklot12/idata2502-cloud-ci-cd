@@ -67,21 +67,6 @@
         }
     }
 
-    async function removeTask() {
-        isLoading = true;
-        errorMessage = "";
-
-        try {
-            console.log(tasks);
-            await api.deleteTask(task);
-            tasks.update(currentTasks => currentTasks.filter(t => t.id !== task.id));
-        } catch (error) {
-            errorMessage = error.message || "Failed to delete task.";
-        } finally {
-            isLoading = false;
-        }
-    }
-
     async function addAssignee(username) {
         try {
             const userData = await api.getUserByUsername(username);
@@ -99,6 +84,20 @@
 
     function removeAssignee(assigneeToRemove) {
         updatedAssignees = updatedAssignees.filter(assignee => assignee.id !== assigneeToRemove.id);
+    }
+
+    async function removeTask() {
+        isLoading = true;
+        errorMessage = "";
+
+        try {
+            await api.deleteTask(task.id);
+            tasks.update(currentTasks => currentTasks.filter(t => t.id !== task.id));
+        } catch (error) {
+            errorMessage = error.message || "Failed to delete task.";
+        } finally {
+            isLoading = false;
+        }
     }
 </script>
 
@@ -318,5 +317,10 @@
     .task-seperator {
         border-bottom: 1px solid var(--secondary-text-color);
         margin: 10px;
+    }
+
+    .error-message {
+        padding: 10px;
+        color: var(--accent-color);
     }
 </style>
