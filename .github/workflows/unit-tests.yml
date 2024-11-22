@@ -61,10 +61,14 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Install Dependencies
-        run: mvn dependency:resolve
+        run: |
+          cd backend
+          mvn dependency:resolve
 
       - name: Run Tests
-        run: mvn test
+        run: |
+          cd backend
+          mvn test
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v3
