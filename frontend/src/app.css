@@ -58,6 +58,7 @@ button:hover {
 }
 
 .std-form-input {
+  border-radius: 0;
   outline: none;
   transition: background-color 0.3s ease;
   border-top: none;

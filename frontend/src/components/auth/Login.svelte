@@ -7,12 +7,12 @@
     let errorMessage = '';
 
     async function handleLogin() {
-        const result = await api.login(username, password);
-        if (result.success) {
+        try {
+            const result = await api.login(username, password);
             isAuthenticated.set(true);
-            window.location.hash = '#/tasks'; // Redirect to task list after successful login
-        } else {
-            errorMessage = result.message; // Display the specific error message from the backend
+            window.location.hash = "#/tasks"
+        } catch (e) {
+            errorMessage = e.message;
         }
     }
 </script>

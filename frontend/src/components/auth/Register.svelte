@@ -8,12 +8,12 @@
     let errorMessage = '';
 
     async function handleRegister() {
-        const result = await api.register(username, email, password);
-        if (result.success) {
+        try {
+            const result = await api.register(username, email, password);
             isAuthenticated.set(true);
-            window.location.hash = '#/tasks'; // Redirect to task list after successful registration
-        } else {
-            errorMessage = result.message; // Display the specific error message from the backend
+            window.location.hash = "#/tasks";
+        } catch (e) {
+            errorMessage = e.message;
         }
     }
 </script>
