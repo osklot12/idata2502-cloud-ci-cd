@@ -29,9 +29,14 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 80
-          env:
-            - name: VITE_API_BASE_URL
-              value: "http://backend-service/api"
+          volumeMounts:
+            - name: vite-config-volume
+              mountPath: /usr/share/nginx/html/config.json
+              subPath: config.json
+            - name: nginx-config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+
 
           # setting up a readiness probe
           readinessProbe:
@@ -61,3 +66,13 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "250m"
+
+      volumes:
+        # setting the config map as a volume
+        - name: vite-config-volume
+          configMap:
+            name: vite-config
+
+        - name: nginx-config-volume
+          configMap:
+            name: nginx-config

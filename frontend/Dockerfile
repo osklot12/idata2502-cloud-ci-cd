@@ -13,9 +13,7 @@ RUN npm install
 # copy the rest the app's source code
 COPY . .
 
-# inject the environment variable and build the Svelte app for production
-ARG VITE_API_BASE_URL
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+# building the app
 RUN npm run build
 
 # serve with nginx

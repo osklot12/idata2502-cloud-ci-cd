@@ -9,8 +9,7 @@ import {
     clearUsername
 } from '../../stores/authStore.js';
 import {ApiInterface} from "./apiInterface.js";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+import {API_BASE_URL, fetchConfig} from "../config.js";
 
 const DEFAULT_HEADERS = { "Content-Type": "application/json" };
 
@@ -37,8 +36,18 @@ function responseContainsAuthInfo(data) {
 }
 
 export class SpringApi extends ApiInterface {
+    constructor() {
+        super();
+        this.apiBaseUrl = null;
+    }
+
+    async init() {
+        await fetchConfig();
+        this.apiBaseUrl = API_BASE_URL;
+    }
+
     async login(username, password) {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        const response = await fetch(`${this.apiBaseUrl}/auth/login`, {
             method: "POST",
             headers: createHeaders(),
             body: JSON.stringify({ username, password }),
@@ -55,7 +64,7 @@ export class SpringApi extends ApiInterface {
     }
 
     async register(username, email, password) {
-        const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        const response = await fetch(`${this.apiBaseUrl}/auth/register`, {
             method: "POST",
             headers: createHeaders(),
             body: JSON.stringify({ username, email, password }),
@@ -80,7 +89,7 @@ export class SpringApi extends ApiInterface {
     async getTasks() {
         const jwtToken = get(token);
 
-        const response = await fetch(`${API_BASE_URL}/tasks`, {
+        const response = await fetch(`${this.apiBaseUrl}/tasks`, {
             method: "GET",
             headers: createHeaders({ "Authorization": `Bearer ${jwtToken}` }),
         });
@@ -91,7 +100,7 @@ export class SpringApi extends ApiInterface {
     async createTask(task) {
         const jwtToken = get(token);
 
-        const response = await fetch(`${API_BASE_URL}/tasks`, {
+        const response = await fetch(`${this.apiBaseUrl}/tasks`, {
             method: "POST",
             headers: createHeaders({ "Authorization": `Bearer ${jwtToken}` }),
             body: JSON.stringify(task),
@@ -103,7 +112,7 @@ export class SpringApi extends ApiInterface {
     async updateTask(task) {
         const jwtToken = get(token);
 
-        const response = await fetch(`${API_BASE_URL}/tasks/${task.id}`, {
+        const response = await fetch(`${this.apiBaseUrl}/tasks/${task.id}`, {
             method: "PUT",
             headers: createHeaders({ "Authorization": `Bearer ${jwtToken}` }),
             body: JSON.stringify(task),
@@ -115,7 +124,7 @@ export class SpringApi extends ApiInterface {
     async deleteTask(taskId) {
         const jwtToken = get(token);
 
-        const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+        const response = await fetch(`${this.apiBaseUrl}/tasks/${taskId}`, {
             method: "DELETE",
             headers: createHeaders({ "Authorization": `Bearer ${jwtToken}` }),
         });
@@ -126,7 +135,7 @@ export class SpringApi extends ApiInterface {
     async getUserByUsername(username) {
         const jwtToken = get(token);
 
-        const response = await fetch(`${API_BASE_URL}/users/${username}`, {
+        const response = await fetch(`${this.apiBaseUrl}/users/${username}`, {
             method: "GET",
             headers: createHeaders({ "Authorization": `Bearer ${jwtToken}` }),
         });
@@ -134,3 +143,5 @@ export class SpringApi extends ApiInterface {
         return await handleResponse(response, `Cannot find user with username: ${username}`);
     }
 }
+
+export const springApi = new SpringApi();

@@ -65,6 +65,8 @@ export class TestApi extends ApiInterface {
         });
     }
 
+    async init() {};
+
     async login(username, password) {
         if (username === this.mockUsername && password === this.mockPassword) {
             setToken(this.mockToken);

@@ -1,4 +1,8 @@
 export class ApiInterface {
+    async init() {
+        throw new Error("init() must be implemented");
+    }
+
     async login(username, password) {
         throw new Error("login() must be implemented.");
     }
