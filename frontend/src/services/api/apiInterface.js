@@ -1,3 +1,5 @@
+import {clearToken, clearUserId, clearUsername} from "../../stores/authStore.js";
+
 export class ApiInterface {
     async init() {
         throw new Error("init() must be implemented");
@@ -12,7 +14,9 @@ export class ApiInterface {
     }
 
     logout() {
-        throw new Error("logout() must be implemented.")
+        clearToken();
+        clearUserId();
+        clearUsername();
     }
 
     async getTasks() {

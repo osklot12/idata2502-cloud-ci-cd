@@ -3,7 +3,12 @@ import {token, userId, username, setToken, setUserId, setUsername, clearToken, c
 import Task from "../../classes/Task.js"
 import User from "../../classes/User.js"
 
-// generates a twt token for testing purposes
+/**
+ * Generates a mock JWT token. The expiry date is set to 24 hours by default.
+ *
+ * @param expiryInSeconds the expiry date from now in seconds
+ * @returns {string} a mock JWT token
+ */
 function generateMockToken(expiryInSeconds = 24 * 60 * 60) {
     const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
     const payload = btoa(
@@ -13,6 +18,10 @@ function generateMockToken(expiryInSeconds = 24 * 60 * 60) {
     return `${header}.${payload}.${signature}`;
 }
 
+/**
+ * An implementation of {@link ApiInterface} for testing purposes, mocking
+ * an actual API.
+ */
 export class TestApi extends ApiInterface {
     constructor() {
         super();
@@ -97,11 +106,6 @@ export class TestApi extends ApiInterface {
         } else {
             throw new Error("Invalid registration details");
         }
-    }
-
-    logout() {
-
-        console.log("Mock logout called");
     }
 
     async getTasks() {

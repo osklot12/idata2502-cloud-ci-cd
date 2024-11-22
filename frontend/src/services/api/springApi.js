@@ -80,12 +80,6 @@ export class SpringApi extends ApiInterface {
         return { success: true, message: data.message };
     }
 
-    logout() {
-        clearToken();
-        clearUserId();
-        clearUsername();
-    }
-
     async getTasks() {
         const jwtToken = get(token);
 

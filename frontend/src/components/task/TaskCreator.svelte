@@ -6,8 +6,14 @@
     import User from "../../classes/User.js";
     import Task from "../../classes/Task.js";
 
-    let task = new Task();
+    let task = getTaskTemplate();
     let errorMessage = "";
+
+    function getTaskTemplate() {
+        let taskTemplate = new Task();
+        taskTemplate.deadline = formatDateToStr(new Date());
+        return taskTemplate;
+    }
 
     async function addAssignee(username) {
         try {
@@ -49,9 +55,7 @@
             tasks.update((currentTasks) => [...currentTasks, createdTask]);
 
             // Reset the form or navigate to another page on success
-            task = new Task(); // Clear the form
-
-
+            task = getTaskTemplate();
         } catch (error) {
             errorMessage = error.message || "Failed to create the task.";
             console.error(errorMessage);
@@ -77,8 +81,7 @@
         <input
                 type="date"
                 class="std-form-datepicker"
-                value={formatDateToStr(new Date())}
-                on:change={(e) => task.deadline = new Date(e.target.value)}
+                bind:value={task.deadline}
         />
     </label>
     <label class="std-form-element task-creator-assignees-wrap">

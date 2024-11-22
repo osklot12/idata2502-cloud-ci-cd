@@ -9,15 +9,15 @@
 </script>
 
 <div class="workspace">
+    <div class="toolbar">
+        <button class="tool-btn" on:click={handleLogout}>
+            <span class="material-symbols-outlined">logout</span>
+        </button>
+    </div>
     <div class="dashboard-container">
         <Dashboard/>
     </div>
     <div class="tools-and-tasks">
-        <div class="toolbar">
-            <button class="tool-btn" on:click={handleLogout}>
-                <span class="material-symbols-outlined">logout</span>
-            </button>
-        </div>
         <div class="task-scroll-container">
 
             <TaskScroll/>
@@ -46,10 +46,12 @@
     }
 
     .toolbar {
+        position: absolute;
         display: flex;
         flex-direction: row;
         justify-content: right;
         padding: 20px;
+        width: calc(100% - 40px);
     }
 
     .tool-btn {
@@ -65,5 +67,11 @@
         padding: 100px 0;
         flex: 1;
         overflow-y: scroll;
+    }
+
+    @media (max-width: 1000px) {
+        .workspace {
+            flex-direction: column;
+        }
     }
 </style>

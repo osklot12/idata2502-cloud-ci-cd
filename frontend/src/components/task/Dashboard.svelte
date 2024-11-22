@@ -31,6 +31,7 @@
     .dashboard {
         display: flex;
         flex-direction: column;
+        align-items: center;
         padding: 5rem;
         gap: 5rem;
         color: white;
