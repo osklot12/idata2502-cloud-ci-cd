@@ -17,23 +17,46 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
+/**
+ * Implementation of {@link TaskService} that provides standard operations for managing tasks.
+ * This service handles CRUD operations and enforces access control based on task ownership and participation.
+ */
 @Service
-public class StandardTaskService implements TaskService{
+public class StandardTaskService implements TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Constructs a {@link StandardTaskService}.
+     *
+     * @param taskRepository the {@link TaskRepository} for managing task data
+     * @param userRepository the {@link UserRepository} for managing user data
+     */
     @Autowired
     public StandardTaskService(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
     }
 
+    /**
+     * Retrieves all tasks associated with the currently authenticated user.
+     *
+     * @return a list of {@link Task} objects where the current user is a creator or participant
+     */
     @Override
     public List<Task> getAllTasks() {
         User currentUser = AuthUtil.getCurrentUser();
         return taskRepository.findTasksByUserParticipation(currentUser.getId());
     }
 
+    /**
+     * Retrieves a specific task by its ID, enforcing access control.
+     *
+     * @param id the ID of the task to retrieve
+     * @return the {@link Task} object if accessible
+     * @throws RuntimeException      if the task is not found
+     * @throws AccessDeniedException if the current user does not have access to the task
+     */
     @Override
     public Task getTaskById(Long id) {
         Task task = taskRepository.findById(id)
@@ -46,6 +69,12 @@ public class StandardTaskService implements TaskService{
         return task;
     }
 
+    /**
+     * Creates a new task with the specified details.
+     *
+     * @param request the {@link TaskRequest} containing the task details
+     * @return the newly created {@link Task}
+     */
     @Override
     public Task createTask(TaskRequest request) {
         User creator = AuthUtil.getCurrentUser();
@@ -54,10 +83,17 @@ public class StandardTaskService implements TaskService{
         task.setCreatedAt(LocalDateTime.now());
         task.setCreator(creator);
 
-        System.out.println(request.toString());
         return taskRepository.save(task);
     }
 
+    /**
+     * Updates an existing task by its ID, enforcing access control.
+     *
+     * @param id      the ID of the task to update
+     * @param request the {@link TaskRequest} containing the updated details
+     * @return the updated {@link Task}
+     * @throws AccessDeniedException if the current user does not have permission to update the task
+     */
     @Override
     public Task updateTaskById(Long id, TaskRequest request) {
         Task task = getTaskById(id);
@@ -74,6 +110,32 @@ public class StandardTaskService implements TaskService{
         return taskRepository.save(task);
     }
 
+    /**
+     * Deletes a task by its ID, enforcing access control.
+     *
+     * @param id the ID of the task to delete
+     * @throws RuntimeException      if the task is not found
+     * @throws AccessDeniedException if the current user does not have permission to delete the task
+     */
+    @Override
+    public void deleteTaskById(Long id) {
+        if (!taskRepository.existsById(id)) {
+            throw new RuntimeException("Task not found with id: " + id);
+        }
+
+        if (!isCreator(getTaskById(id))) {
+            throw new AccessDeniedException("You do not have permission to delete this task.");
+        }
+
+        taskRepository.deleteById(id);
+    }
+
+    /**
+     * Converts a {@link TaskRequest} into a {@link Task}.
+     *
+     * @param request the {@link TaskRequest} containing the task details
+     * @return a {@link Task} object populated with the request details
+     */
     private Task createTaskFromRequest(TaskRequest request) {
         Task task = new Task();
 
@@ -86,6 +148,12 @@ public class StandardTaskService implements TaskService{
         return task;
     }
 
+    /**
+     * Retrieves a set of {@link User} objects by their IDs.
+     *
+     * @param userIds the set of user IDs to retrieve
+     * @return a set of {@link User} objects corresponding to the IDs
+     */
     private Set<User> getUsersByIds(Set<Long> userIds) {
         if (userIds == null || userIds.isEmpty()) {
             return Set.of(); // Return an empty set if no assignees are specified
@@ -98,24 +166,23 @@ public class StandardTaskService implements TaskService{
                 .collect(Collectors.toSet()); // Collect into a Set
     }
 
+    /**
+     * Checks if the current user is the creator of the specified task.
+     *
+     * @param task the {@link Task} to check
+     * @return true if the current user is the creator, false otherwise
+     */
     private boolean isCreator(Task task) {
         return task.getCreator().equals(AuthUtil.getCurrentUser());
     }
 
+    /**
+     * Checks if the current user is assigned to the specified task.
+     *
+     * @param task the {@link Task} to check
+     * @return true if the current user is assigned, false otherwise
+     */
     private boolean isAssigned(Task task) {
         return task.getAssignees().contains(AuthUtil.getCurrentUser());
-    }
-
-    @Override
-    public void deleteTaskById(Long id) {
-        if (!taskRepository.existsById(id)) {
-            throw new RuntimeException("Task not found with id: " + id);
-        }
-
-        if (!isCreator(getTaskById(id))) {
-            throw new AccessDeniedException("You do not have permission to delete this task.");
-        }
-
-        taskRepository.deleteById(id);
     }
 }

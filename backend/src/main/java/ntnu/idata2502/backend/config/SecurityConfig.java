@@ -1,9 +1,7 @@
 package ntnu.idata2502.backend.config;
 
-import jakarta.servlet.http.HttpServletRequest;
 import ntnu.idata2502.backend.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,33 +12,46 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.time.Duration;
 import java.util.Arrays;
-import java.util.Collections;
 
+/**
+ * Handles security configurations for the application.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    // name of the environment variable associated with allowed cors origins
     private static final String CORS_ORIGIN_ENV_VAR = "CORS_ALLOWED_ORIGINS";
 
+    // default fallback allowed cors origin if env variable is missing
     private static final String DEFAULT_CORS_ORIGIN = "http://localhost:80";
 
+    /**
+     * Creates a new Security Config instance.
+     *
+     * @param jwtAuthenticationFilter the jwt authentication filter to use
+     */
     @Autowired
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
+    /**
+     * Configures security.
+     *
+     * @param http the http security to configure
+     * @return the configured http security
+     * @throws Exception thrown if configuration fails
+     */
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
@@ -66,16 +77,36 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Provides the authentication manager bean, required for managing authentication processes.
+     *
+     * @param authenticationConfiguration the authentication configuration provided by Spring
+     * @return the configured AuthenticationManager
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    /**
+     * Provides a password encoder bean for securely hashing and verifying passwords.
+     * Uses BCrypt, a widely used hashing algorithm.
+     *
+     * @return a BCryptPasswordEncoder instance
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Configures Cross-Origin Resource Sharing (CORS) settings for the application.
+     * Retrieves allowed origins from an environment variable, with a fallback to a default value.
+     * Allows specific HTTP methods, headers, and credentials.
+     *
+     * @return a UrlBasedCorsConfigurationSource with the configured CORS settings
+     */
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -92,6 +123,12 @@ public class SecurityConfig {
         return source;
     }
 
+    /**
+     * Retrieves the allowed origins for CORS configuration from the environment.
+     * If the environment variable is not set, a default origin is used.
+     *
+     * @return a comma-separated string of allowed origins
+     */
     private String getAllowedOrigins() {
         String allowedOrigins = System.getenv(CORS_ORIGIN_ENV_VAR);
         if (allowedOrigins == null) {

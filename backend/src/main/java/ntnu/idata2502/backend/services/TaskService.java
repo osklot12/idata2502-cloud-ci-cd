@@ -5,43 +5,53 @@ import ntnu.idata2502.backend.entities.Task;
 
 import java.util.List;
 
+/**
+ * Defines the contract for task management services.
+ * This interface specifies operations for creating, retrieving, updating, and deleting tasks.
+ */
 public interface TaskService {
+
     /**
-     * Returns all tasks.
+     * Retrieves all tasks associated with the system.
      *
-     * @return list of all tasks
+     * @return a list of all {@link Task} objects
      */
     List<Task> getAllTasks();
 
     /**
-     * Returns a task with a given ID.
+     * Retrieves a task by its unique identifier.
      *
-     * @param id task id
-     * @return the task with the given id
+     * @param id the unique identifier of the task to retrieve
+     * @return the {@link Task} with the specified ID
+     * @throws RuntimeException if the task is not found
      */
     Task getTaskById(Long id);
 
     /**
-     * Creates a new task.
+     * Creates a new task based on the provided task details.
      *
-     * @param request the requested task to create
-     * @return the created task
+     * @param request the {@link TaskRequest} containing details for the new task
+     * @return the newly created {@link Task}
      */
     Task createTask(TaskRequest request);
 
     /**
-     * Updates an existing task.
+     * Updates an existing task identified by its unique ID.
      *
-     * @param id the task id
-     * @param request the updated task
-     * @return the updated task
+     * @param id the unique identifier of the task to update
+     * @param request the {@link TaskRequest} containing the updated task details
+     * @return the updated {@link Task}
+     * @throws RuntimeException if the task is not found
+     * @throws SecurityException if the user does not have permission to update the task
      */
     Task updateTaskById(Long id, TaskRequest request);
 
     /**
-     * Deletes an existing task.
+     * Deletes an existing task identified by its unique ID.
      *
-     * @param id the task id
+     * @param id the unique identifier of the task to delete
+     * @throws RuntimeException if the task is not found
+     * @throws SecurityException if the user does not have permission to delete the task
      */
     void deleteTaskById(Long id);
 }
