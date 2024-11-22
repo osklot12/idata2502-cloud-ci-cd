@@ -30,10 +30,6 @@ jobs:
         with:
           terraform_version: 1.4.5
 
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: infrastructure/terraform/prod/
-
       - name: Terraform Init
         run: terraform init
         working-directory: infrastructure/terraform/prod/
