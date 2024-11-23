@@ -1,7 +1,7 @@
 # setting the backend for terraform
 terraform {
   backend "gcs" {
-    bucket = "tomorrow-terraform-bucket"
+    bucket = "idata2502-terraform-backend"
     prefix = "terraform/prod/state"
   }
 }

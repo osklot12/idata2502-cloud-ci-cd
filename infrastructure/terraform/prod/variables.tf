@@ -1,6 +1,11 @@
 # the project
 variable "project" {
-  default = "idata2502-ci-cd"
+  default = "idata2502-project"
+}
+
+# the service account to use
+variable "service_account" {
+  default = "git-account@idata2502-project.iam.gserviceaccount.com"
 }
 
 # region of servers to use

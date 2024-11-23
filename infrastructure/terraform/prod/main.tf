@@ -29,6 +29,11 @@ resource "google_container_cluster" "tomorrow_cluster_prod" {
   location = var.region
   initial_node_count = var.cluster_initial_node_count
 
+  # setting service account
+  node_config {
+    service_account = var.service_account
+  }
+
   # enable vpc-native (ip aliasing)
   ip_allocation_policy {}
 
@@ -62,6 +67,9 @@ resource "google_container_node_pool" "default_pool" {
   location = var.region
 
   node_config {
+    # setting the service account
+    service_account = var.service_account
+
     machine_type = var.machine_type
 
     # setting disk usage configurations
