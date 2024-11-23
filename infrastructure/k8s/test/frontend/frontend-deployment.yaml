@@ -1,0 +1,79 @@
+# CONFIGURING A DEPLOYMENT FOR THE FRONTEND APPLICATION
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  # the name of the deployment
+  name: frontend-deployment
+
+spec:
+  # keep replicas minimal for testing
+  replicas: 1
+
+  # specifies how the deployment identifies pods it manages
+  selector:
+    matchLabels:
+      app: frontend
+
+  # describes the template for the pods created by this deployment
+  template:
+    metadata:
+      labels:
+        app: frontend
+
+    spec:
+      containers:
+
+          # setting up the container to run
+        - name: frontend
+          image: osklot12/svelte-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: vite-config-volume
+              mountPath: /usr/share/nginx/html/config.json
+              subPath: config.json
+            - name: nginx-config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+
+
+          # setting up a readiness probe
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # setting up a liveness probe
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # resource requests and limits
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+
+      volumes:
+        # setting the config map as a volume
+        - name: vite-config-volume
+          configMap:
+            name: vite-config
+
+        - name: nginx-config-volume
+          configMap:
+            name: nginx-config

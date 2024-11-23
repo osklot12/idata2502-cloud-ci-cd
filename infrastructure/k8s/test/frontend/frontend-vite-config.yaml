@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vite-config
+
+# providing the backend api url for the frontend
+data:
+  config.json: |
+    {
+      "VITE_API_BASE_URL": "/api"
+    }

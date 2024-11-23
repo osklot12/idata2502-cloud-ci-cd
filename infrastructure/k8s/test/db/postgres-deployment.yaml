@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  # name of the deployment
+  name: postgres-deployment
+
+spec:
+  # number of pod replicas to maintain
+  replicas: 1
+
+  # matches pods labeled as "app: postgres"
+  selector:
+    matchLabels:
+      app: postgres
+
+  # template for creating pods
+  template:
+    metadata:
+      # labels applied to pods created by this deployment
+      labels:
+        app: postgres
+
+    spec:
+      containers:
+        - name: postgres
+
+          # specifies the image to use for the container
+          image: postgres:13
+
+          # exposes postgresql default port
+          ports:
+            - containerPort: 5432
+
+          # references database username and password from a kubernetes secret
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: username
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+
+            - name: POSTGRES_DB
+              value: "tomorrow_db"
+
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+
+          # mounts persistent storage for postgresql data
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: "/var/lib/postgresql/data"
+
+          # checks if the postgresql service is ready to accept traffic
+          readinessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # checks if the postgresql service is healthy
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # resource requests and limits
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+
+      # defines persistent storage for the postgresql database
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
