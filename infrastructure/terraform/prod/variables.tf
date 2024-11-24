@@ -45,7 +45,7 @@ variable "network_name" {
 
 # subnet name
 variable "subnet_name" {
-  default = "tomorrow-subnet"
+  default = "tomorrow-subnet-prod"
 }
 
 # pool name

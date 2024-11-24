@@ -50,7 +50,7 @@ variable "network_name" {
 
 # subnet name
 variable "subnet_name" {
-  default = "tomorrow-subnet"
+  default = "tomorrow-subnet-test"
 }
 
 # pool name
@@ -90,7 +90,7 @@ variable "node_pool_max_node_count" {
 
 # name for the nat router
 variable "nat_router_name" {
-  default = "nat-router-prod"
+  default = "nat-router-test"
 }
 
 # name for the nat router configurations
