@@ -12,8 +12,10 @@ spec:
   # specifies the pods that this service targets, based on labels
   selector:
     app: backend
+
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+
   type: LoadBalancer
