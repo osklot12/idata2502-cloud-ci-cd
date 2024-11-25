@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: reset-database
+spec:
+  template:
+    spec:
+      containers:
+        - name: db-reset
+          image: postgres:13
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+          command: ["sh", "-c"]
+          args:
+            - |
+              psql -h postgres-service -U $PGUSER -d tomorrow_db -c "
+              DO \$\$ 
+              DECLARE
+                r RECORD;
+              BEGIN
+                FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+                  EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' CASCADE;';
+                END LOOP;
+              END \$\$;";
+      restartPolicy: Never
+  backoffLimit: 4
