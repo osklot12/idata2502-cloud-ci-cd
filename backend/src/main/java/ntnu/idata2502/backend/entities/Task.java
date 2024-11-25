@@ -28,6 +28,11 @@ public class Task {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
@@ -60,7 +65,6 @@ public class Task {
         this.status = status;
         this.deadline = deadline;
         this.creator = creator;
-        this.createdAt = LocalDateTime.now();
     }
 
     // getters and setters
