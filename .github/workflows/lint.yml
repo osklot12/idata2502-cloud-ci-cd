@@ -2,8 +2,7 @@ name: Secrets Detection
 
 on:
   workflow_run:
-    workflows:
-      - Secrets Detection
+    workflows: ["Secrets Detection"]
     types:
       - completed
 
