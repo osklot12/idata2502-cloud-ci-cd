@@ -2,9 +2,11 @@ name: Lint Code Base
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - gitactions
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - gitactions
 
 jobs:
   run-lint:
