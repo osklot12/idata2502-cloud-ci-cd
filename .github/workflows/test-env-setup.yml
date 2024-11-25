@@ -14,35 +14,42 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Authenticate to Google Cloud (if needed for GKE)
+      # Step 2: Authenticate to Google Cloud
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-      # Step 3: Set up Google Cloud SDK (if applicable)
+      # Step 3: Set up Google Cloud SDK
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           version: "latest"
 
-      # Step 4: Set up Kubernetes kubectl
+      # Step 4: Install gke-gcloud-auth-plugin
+      - name: Install gke-gcloud-auth-plugin
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+          gcloud components update
+
+      # Step 5: Set up Kubernetes kubectl
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: 'latest'
 
-      # Step 5: Set Kubernetes context for test environment
+      # Step 6: Set Kubernetes context for test environment
       - name: Set Kubernetes Context
         run: |
           gcloud container clusters get-credentials tomorrow-cluster-test --region europe-north1 --project idata2502-project
 
-      # Step 6: Reset Test Environment
+      # Step 7: Reset Test Environment
       - name: Reset Kubernetes Resources
         run: |
-          kubectl delete all --all
+          kubectl delete all --all || true
 
-      # Step 7: Apply Kubernetes Manifests
+      # Step 8: Apply Kubernetes Manifests
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f infrastructure/k8s/test/storage
@@ -51,25 +58,25 @@ jobs:
           kubectl apply -f infrastructure/k8s/test/backend
           kubectl apply -f infrastructure/k8s/test/frontend
 
-      # Step 8: Wait for Deployments to Roll Out
+      # Step 9: Wait for Deployments to Roll Out
       - name: Wait for Deployments to Roll Out
         run: |
           kubectl rollout status deployment/backend-deployment --timeout=300s
           kubectl rollout status deployment/frontend-deployment --timeout=300s
 
-      # Step 9: Ensure All Pods Are Ready
+      # Step 10: Ensure All Pods Are Ready
       - name: Wait for All Pods to Be Ready
         run: |
           kubectl wait --for=condition=Ready pods --all --timeout=300s
 
-      # Step 10: Run Database Reset Job
+      # Step 11: Run Database Reset Job
       - name: Reset Database
         run: |
-          kubectl delete job reset-database --ignore-not-found
+          kubectl delete job reset-database || true
           kubectl apply -f infrastructure/k8s/test/jobs/reset-database.yaml
           kubectl wait --for=condition=complete job/reset-database --timeout=120s
 
-      # Step 11: Output Kubernetes Resources Status
+      # Step 12: Output Kubernetes Resources Status
       - name: Output Kubernetes Status
         run: |
           kubectl get all
