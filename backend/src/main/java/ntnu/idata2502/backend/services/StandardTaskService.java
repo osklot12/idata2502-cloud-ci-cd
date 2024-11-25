@@ -80,7 +80,6 @@ public class StandardTaskService implements TaskService {
     @Override
     public Task createTask(TaskRequest request) {
         Task task = createTaskFromRequest(request);
-        task.setCreatedAt(LocalDateTime.now());
         task.setCreator(authUtil.getCurrentUser());
 
         return taskRepository.save(task);
