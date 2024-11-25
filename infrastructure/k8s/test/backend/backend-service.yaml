@@ -5,9 +5,6 @@ metadata:
   # the name of the service, used for referencing within the cluster
   name: backend-service
   namespace: default
-  annotations:
-    cloud.google.com/load-balancer-type: "External"
-    cloud.google.com/load-balancer-ipv4: 35.228.211.10
 spec:
   # specifies the pods that this service targets, based on labels
   selector:
@@ -19,3 +16,4 @@ spec:
       targetPort: 8080
 
   type: LoadBalancer
+  loadBalancerIP: 34.88.182.249
