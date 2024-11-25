@@ -35,7 +35,7 @@ spec:
                 sleep 2;
               done;
               echo "PostgreSQL is ready!";
-              
+
       containers:
         - name: backend
 
