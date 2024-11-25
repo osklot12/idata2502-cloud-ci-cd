@@ -1,9 +1,9 @@
-name: Cypress Tests
+name: E2E tests - Cypress
 
 on:
   workflow_run:
     workflows:
-      - Build and Push Containers
+      - Build, Scan, and Push Containers
     types:
       - completed
 
