@@ -61,7 +61,9 @@ jobs:
       # Step 10: Verify All Pods Are Ready
       - name: Wait for All Pods to Be Ready
         run: |
-          kubectl wait --for=condition=Ready pods --all --timeout=300s
+          kubectl wait --for=condition=Ready pods -l app=backend --timeout=300s
+          kubectl wait --for=condition=Ready pods -l app=frontend --timeout=300s
+          kubectl wait --for=condition=Ready pods -l app=postgres --timeout=300s
 
       # Step 11: Output Kubernetes Resources Status
       - name: Output Kubernetes Status
