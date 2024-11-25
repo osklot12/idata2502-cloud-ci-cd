@@ -10,6 +10,12 @@ resource "google_compute_address" "frontend_static_ip" {
   region = var.region
 }
 
+# reserving a static ip for the backend
+resource "google_compute_address" "backend_static_ip" {
+  name = var.backend_ip_name_test
+  region = var.region
+}
+
 # creating network
 resource "google_compute_network" "network" {
   name = var.network_name

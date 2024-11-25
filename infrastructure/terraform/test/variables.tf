@@ -25,7 +25,7 @@ variable "machine_type" {
 
 # cluster name
 variable "cluster_name" {
-  default = "tomorrow-cluster-prod"
+  default = "tomorrow-cluster-test"
 }
 
 # initial node count for cluster
@@ -35,27 +35,32 @@ variable "cluster_initial_node_count" {
 
 # frontend static ip name
 variable "frontend_ip_name_prod" {
-  default = "frontend-static-ip-prod"
+  default = "frontend-static-ip-test"
+}
+
+# backend static ip name
+variable "backend_ip_name_test" {
+  default = "backend-static-ip-test"
 }
 
 # network name
 variable "network_name" {
-  default = "tomorrow-network-prod"
+  default = "tomorrow-network-test"
 }
 
 # subnet name
 variable "subnet_name" {
-  default = "tomorrow-subnet-prod"
+  default = "tomorrow-subnet-test"
 }
 
 # pool name
 variable "pool_name" {
-  default = "prod-pool"
+  default = "test-pool"
 }
 
 # node environment label
 variable "node_environment_label" {
-  default = "production"
+  default = "test"
 }
 
 # the type of disk for nodes
@@ -85,7 +90,7 @@ variable "node_pool_max_node_count" {
 
 # name for the nat router
 variable "nat_router_name" {
-  default = "nat-router-prod"
+  default = "nat-router-test"
 }
 
 # name for the nat router configurations

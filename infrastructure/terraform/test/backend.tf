@@ -2,6 +2,6 @@
 terraform {
   backend "gcs" {
     bucket = "idata2502-terraform-backend"
-    prefix = "terraform/prod/state"
+    prefix = "terraform/test/state"
   }
 }
