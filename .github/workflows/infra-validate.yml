@@ -50,7 +50,6 @@ jobs:
           path: infrastructure/terraform/prod/tfplan
 
       - name: Terraform Apply with Approval
-        if: github.event_name == 'workflow_dispatch'
         run: terraform apply tfplan
         working-directory: infrastructure/terraform/prod
 
@@ -96,6 +95,5 @@ jobs:
           path: infrastructure/terraform/test/tfplan
 
       - name: Terraform Apply with Approval
-        if: github.event_name == 'workflow_dispatch'
         run: terraform apply tfplan
         working-directory: infrastructure/terraform/test
