@@ -27,3 +27,5 @@ backend/*.log
 **/terraform/*/*.tfstate.*
 **/terraform/*/crash.log
 **/terraform/*/*.tfplan
+
+node_modules/
