@@ -3,9 +3,7 @@ name: Revert Main on Failure
 on:
   workflow_run:
     workflows:
-      - Build and Push Containers
-      - Unit tests
-      - Deploy Infrastructure and Application
+
     types:
       - completed
 
