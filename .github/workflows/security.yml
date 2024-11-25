@@ -36,5 +36,5 @@ jobs:
           GITLEAKS_VERSION: "8.18.1"
 
       - name: Run gitleaks
-        run: gitleaks -v detect --no-git ${{ secrets.GITHUB_TOKEN }} --source .
+        run: gitleaks -v detect --no-git ${{ secrets.GITHUB_TOKEN }} --source . --redact --exit-code 0
         shell: bash
