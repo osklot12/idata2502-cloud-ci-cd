@@ -40,17 +40,11 @@ jobs:
         working-directory: infrastructure/terraform/prod
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan
         working-directory: infrastructure/terraform/prod
 
-      - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-plan
-          path: infrastructure/terraform/prod/tfplan
-
       - name: Terraform Apply with Approval
-        run: terraform apply tfplan
+        run: terraform apply
         working-directory: infrastructure/terraform/prod
 
   validate-and-initialize-test-infrastructure:
@@ -85,15 +79,9 @@ jobs:
         working-directory: infrastructure/terraform/test
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan
         working-directory: infrastructure/terraform/test
 
-      - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-plan
-          path: infrastructure/terraform/test/tfplan
-
       - name: Terraform Apply with Approval
-        run: terraform apply tfplan
+        run: terraform apply
         working-directory: infrastructure/terraform/test
