@@ -1,0 +1,73 @@
+name: Setup Production Environment
+
+on:
+  workflow_run:
+    workflows:
+      - Clean Up Test Environment
+    types:
+      - completed
+
+jobs:
+  setup-production-environment:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # Step 3: Set up Google Cloud SDK
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: "latest"
+
+      # Step 4: Install gke-gcloud-auth-plugin
+      - name: Install gke-gcloud-auth-plugin
+        run: |
+          gcloud components install gke-gcloud-auth-plugin --quiet
+          gcloud components update --quiet
+
+      # Step 5: Set up Kubernetes kubectl
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      # Step 6: Set Kubernetes Context for Production
+      - name: Set Kubernetes Context
+        run: |
+          gcloud container clusters get-credentials tomorrow-cluster-prod --region europe-north1 --project idata2502-project
+
+      # Step 8: Apply Kubernetes Manifests
+      - name: Apply Kubernetes Manifests
+        run: |
+          kubectl apply -f infrastructure/k8s/prod/storage
+          kubectl apply -f infrastructure/k8s/prod/secrets
+          kubectl apply -f infrastructure/k8s/prod/db
+          kubectl apply -f infrastructure/k8s/prod/backend
+          kubectl apply -f infrastructure/k8s/prod/frontend
+
+      # Step 9: Wait for Deployments to Roll Out
+      - name: Wait for Deployments to Roll Out
+        run: |
+          kubectl rollout status deployment/backend-deployment --timeout=300s
+          kubectl rollout status deployment/frontend-deployment --timeout=300s
+
+      # Step 10: Verify All Pods Are Ready
+      - name: Wait for All Pods to Be Ready
+        run: |
+          kubectl wait --for=condition=Ready pods -l app=backend --timeout=300s
+          kubectl wait --for=condition=Ready pods -l app=frontend --timeout=300s
+          kubectl wait --for=condition=Ready pods -l app=postgres --timeout=300s
+
+      # Step 11: Output Kubernetes Resources Status
+      - name: Output Kubernetes Status
+        run: |
+          kubectl get all

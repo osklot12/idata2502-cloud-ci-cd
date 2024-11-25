@@ -1,0 +1,30 @@
+name: Postman Tests
+
+on:
+  workflow_run:
+    workflows:
+      - Setup Test Environment
+    types:
+      - completed
+
+jobs:
+  postman-tests:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # install Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # install Newman
+      - name: Install Newman
+        run: npm install -g newman
+
+      # run postman collection
+      - name: Run Postman Tests
+        run: newman run tests/postman/api_integration_tests.postman_collection.json

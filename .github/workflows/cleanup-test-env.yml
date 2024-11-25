@@ -1,0 +1,51 @@
+name: Clean Up Test Environment
+
+on:
+  workflow_run:
+    workflows:
+      - Cypress Tests
+    types:
+      - completed
+
+jobs:
+  setup-test-environment:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # Step 3: Set up Google Cloud SDK
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: "latest"
+
+      # Step 4: Install gke-gcloud-auth-plugin
+      - name: Install gke-gcloud-auth-plugin
+        run: |
+          gcloud components install gke-gcloud-auth-plugin --quiet
+          gcloud components update --quiet 
+
+      # Step 5: Set up Kubernetes kubectl
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      # Step 6: Set Kubernetes context for test environment
+      - name: Set Kubernetes Context
+        run: |
+          gcloud container clusters get-credentials tomorrow-cluster-test --region europe-north1 --project idata2502-project
+
+      # Step 7: Reset Test Environment
+      - name: Reset Kubernetes Resources
+        run: |
+          kubectl delete all --all || true
