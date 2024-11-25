@@ -1,14 +1,13 @@
 name: Unit Tests
 
 on:
-  push:
-    branches:
-      - gitactions
   workflow_run:
     workflows:
       - Lint Code Base
     types:
       - completed
+    branches:
+      - gitactions
 
 jobs:
   run-frontend-unit-tests:
