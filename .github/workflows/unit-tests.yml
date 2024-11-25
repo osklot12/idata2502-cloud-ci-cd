@@ -1,6 +1,9 @@
 name: Unit Tests
 
 on:
+  push:
+    branches:
+      - gitactions
   workflow_run:
     workflows:
       - Lint Code Base
