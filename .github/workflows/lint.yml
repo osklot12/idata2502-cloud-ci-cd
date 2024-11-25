@@ -3,7 +3,7 @@ name: Secrets Detection
 on:
   workflow_run:
     workflows:
-      - Setup Test Environment
+      - Secrets Detection
     types:
       - completed
 
