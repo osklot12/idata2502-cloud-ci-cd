@@ -1,0 +1,1092 @@
+{
+	"info": {
+		"_postman_id": "e6af1fd0-3032-4c9c-a42d-b7e212b4d22f",
+		"name": "Tomorrow API Integration Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25854420"
+	},
+	"item": [
+		{
+			"name": "Registration User1 Successful",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const user1Username = pm.environment.get(\"user1Username\");",
+							"",
+							"pm.test(\"Registration successful\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    // expecting response to contain jwt token",
+							"    pm.expect(jsonData).to.have.property(\"token\");",
+							"",
+							"    // expecting response to contain correct username",
+							"    pm.expect(jsonData).to.have.property(\"username\");",
+							"    pm.expect(jsonData.username).to.equal(user1Username);",
+							"});",
+							"",
+							"// setting environment variable for user id",
+							"pm.environment.set(\"user1Id\", jsonData.userId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// user1 credentials",
+							"const USERNAME = \"testUser\";",
+							"const EMAIL = \"test@email.com\";",
+							"const PASSWORD = \"testPassword\";",
+							"",
+							"// setting environment variables",
+							"pm.environment.set(\"user1Username\", USERNAME);",
+							"pm.environment.set(\"user1Email\", EMAIL);",
+							"pm.environment.set(\"user1Password\", PASSWORD);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "35.228.18.196",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{user1Username}}\",\n    \"email\": \"{{user1Email}}\",\n    \"password\": \"{{user1Password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registration User2 Successful",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const user2Username = pm.environment.get(\"user2Username\");",
+							"",
+							"pm.test(\"Registration successful\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    // expecting response to contain jwt token",
+							"    pm.expect(jsonData).to.have.property(\"token\");",
+							"",
+							"    // expecting response to contain correct username",
+							"    pm.expect(jsonData).to.have.property(\"username\");",
+							"    pm.expect(jsonData.username).to.equal(user2Username);",
+							"});",
+							"",
+							"// setting environment variable for user id",
+							"pm.environment.set(\"user2Id\", jsonData.userId);",
+							"pm.environment.set(\"user2JwtToken\", jsonData.token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// user1 credentials",
+							"const USERNAME = \"anotherTestUser\";",
+							"const EMAIL = \"test@femail.com\";",
+							"const PASSWORD = \"anotherTestPassword\";",
+							"",
+							"// setting environment variables",
+							"pm.environment.set(\"user2Username\", USERNAME);",
+							"pm.environment.set(\"user2Email\", EMAIL);",
+							"pm.environment.set(\"user2Password\", PASSWORD);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "35.228.18.196",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"anotherTestUser\",\n    \"email\": \"test@femail.com\",\n    \"password\": \"testPassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registration Existing Username",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const user1Username = pm.environment.get(\"user1Username\");",
+							"",
+							"pm.test(\"Registration failed due to existing username\", function () {",
+							"    pm.response.to.have.status(400);",
+							"",
+							"    // expecting an error message indicating the error",
+							"    pm.expect(jsonData).to.have.property(\"error\");",
+							"    pm.expect(jsonData.error).to.include(`User with username ${user1Username} already exists`)",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// fetching user1 email",
+							"const user1Email = pm.environment.get(\"user1Email\");",
+							"",
+							"// creating different email",
+							"const DIFFERENT_EMAIL = \"different\" + user1Email;",
+							"",
+							"// setting environment variable",
+							"pm.environment.set(\"user1EmailDifferent\", DIFFERENT_EMAIL);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "35.228.18.196",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{user1Username}}\",\n    \"email\": \"{{user1EmailDifferent}}\",\n    \"password\": \"testPassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Successful",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const user1Username = pm.environment.get(\"user1Username\");",
+							"const user1Id = pm.environment.get(\"user1Id\");",
+							"",
+							"pm.test(\"Login successful\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    // expecting response to contain jwt token",
+							"    pm.expect(jsonData).to.have.property(\"token\");",
+							"",
+							"    // expecting response to contain correct id",
+							"    pm.expect(jsonData).to.have.property(\"userId\");",
+							"    pm.expect(jsonData.userId).to.equal(user1Id);",
+							"",
+							"    // expecting response to contain correct username",
+							"    pm.expect(jsonData).to.have.property(\"username\");",
+							"    pm.expect(jsonData.username).to.equal(user1Username)",
+							"});",
+							"",
+							"// setting token as an environment variable",
+							"pm.environment.set(\"user1JwtToken\", jsonData.token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{user1Username}}\",\n    \"password\": \"{{user1Password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Incorrect Username",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Login failed due to incorrect username\", function () {",
+							"    pm.response.to.have.status(401);",
+							"    pm.expect(jsonData).to.have.property(\"error\");",
+							"    pm.expect(jsonData.error).to.include(\"Incorrect username or password.\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// fetching user1 username",
+							"const user1Username = pm.environment.get(\"user1Username\");",
+							"",
+							"// changing it so it will be incorrect",
+							"const DIFFERENT_USERNAME = user1Username + \"123\";",
+							"",
+							"// setting environment variable",
+							"pm.environment.set(\"user1UsernameDifferent\", DIFFERENT_USERNAME);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{user1UsernameDifferent}}\",\n    \"password\": \"{{user1Password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch User by Username Successful",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const user2Username = pm.environment.get(\"user2Username\");",
+							"const user2Id = pm.environment.get(\"user2Id\");",
+							"",
+							"pm.test(\"Successfully fetching user data\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    // expecting response id to match",
+							"    pm.expect(jsonData).to.have.property(\"id\");",
+							"    pm.expect(jsonData.id).to.equal(Number(user2Id));",
+							"",
+							"    // expecting response username to match",
+							"    pm.expect(jsonData).to.have.property(\"username\");",
+							"    pm.expect(jsonData.username).to.equal(user2Username);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user1JwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/users/{{user2Username}}",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"users",
+						"{{user2Username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Task Successful",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"",
+							"// getting task environment variables",
+							"const header = pm.environment.get(\"taskHeader\");",
+							"const description = pm.environment.get(\"taskDescription\");",
+							"const status = pm.environment.get(\"taskStatus\");",
+							"const deadline = pm.environment.get(\"taskDeadline\");",
+							"const assigneeIds = pm.environment.get(\"taskAssigneeIds\");",
+							"",
+							"// getting the creator of task (user associated with jwt token used)",
+							"const user1Id = pm.environment.get(\"user1Id\");",
+							"const user1Username = pm.environment.get(\"user1Username\");",
+							"const user1Email = pm.environment.get(\"user1Email\");",
+							"",
+							"// getting expected assignee id",
+							"const expectedAssigneeId = pm.environment.get(\"user2Id\");",
+							"",
+							"pm.test(\"Successfully Creating Task\", function () {",
+							"    pm.response.to.have.status(201);",
+							"",
+							"    // expecting response to contain id",
+							"    pm.expect(jsonData).to.have.property(\"id\");",
+							"",
+							"    // expecting response to contain correct header",
+							"    pm.expect(jsonData).to.have.property(\"header\");",
+							"    pm.expect(jsonData.header).to.equal(header);",
+							"",
+							"    // expecting response to contain correct description",
+							"    pm.expect(jsonData).to.have.property(\"description\");",
+							"    pm.expect(jsonData.description).to.equal(description);",
+							"",
+							"    // expecting response to contain correct status",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.equal(status);",
+							"",
+							"    // expecting response to contain correct deadline",
+							"    pm.expect(jsonData).to.have.property(\"deadline\");",
+							"    pm.expect(jsonData.deadline).to.equal(deadline);",
+							"",
+							"    // expecting response to contain createdAt",
+							"    pm.expect(jsonData).to.have.property(\"createdAt\");",
+							"",
+							"    // expecting response to contain a creator object",
+							"    pm.expect(jsonData).to.have.property(\"creator\");",
+							"    pm.expect(jsonData).to.be.an(\"object\");",
+							"",
+							"    // expecting response to contain correct creator id",
+							"    pm.expect(jsonData.creator).to.have.property(\"id\");",
+							"    pm.expect(jsonData.creator.id).to.equal(Number(user1Id))",
+							"",
+							"    // expecting response to contain correct creator username",
+							"    pm.expect(jsonData.creator).to.have.property(\"username\");",
+							"    pm.expect(jsonData.creator.username).to.equal(user1Username);",
+							"",
+							"    // expecting response to contain correct creator email",
+							"    pm.expect(jsonData.creator).to.have.property(\"email\");",
+							"    pm.expect(jsonData.creator.email).to.equal(user1Email);",
+							"",
+							"    // expecting response to contain assignees array",
+							"    pm.expect(jsonData).to.have.property(\"assignees\");",
+							"    pm.expect(jsonData.assignees).to.be.an(\"array\");",
+							"",
+							"    // expecting the response to contain the correct assignee",
+							"    const assignee = jsonData.assignees.find(a => a.id === Number(expectedAssigneeId));",
+							"    pm.expect(assignee.id).to.equal(Number(expectedAssigneeId));",
+							"});",
+							"",
+							"// setting environment variables",
+							"pm.environment.set(\"taskId\", jsonData.id);",
+							"pm.environment.set(\"taskCreatedAt\", jsonData.createdAt);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// fetching environment variables",
+							"const user2Id = pm.environment.get(\"user2Id\");",
+							"",
+							"// setting task attributes",
+							"const HEADER = \"This is simply a test task!\";",
+							"const DESCRIPTION = \"This task is made for testing purposes.\";",
+							"const STATUS = \"pending\";",
+							"const DEADLINE = \"2024-12-15\";",
+							"const ASSIGNEE_IDS = [Number(user2Id)];",
+							"",
+							"// setting environment variables",
+							"pm.environment.set(\"taskHeader\", HEADER);",
+							"pm.environment.set(\"taskDescription\", DESCRIPTION);",
+							"pm.environment.set(\"taskStatus\", STATUS);",
+							"pm.environment.set(\"taskDeadline\", DEADLINE);",
+							"pm.environment.set(\"taskAssigneeIds\", JSON.stringify(ASSIGNEE_IDS));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user1JwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"header\": \"{{taskHeader}}\",\n    \"description\": \"{{taskDescription}}\",\n    \"status\": \"{{taskStatus}}\",\n    \"deadline\": \"{{taskDeadline}}\",\n    \"assigneeIds\": {{taskAssigneeIds}}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/tasks",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Tasks Successful",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"",
+							"// getting task environment variables",
+							"const taskId = pm.environment.get(\"taskId\");",
+							"const taskHeader = pm.environment.get(\"taskHeader\");",
+							"const taskDescription = pm.environment.get(\"taskDescription\");",
+							"const taskStatus = pm.environment.get(\"taskStatus\");",
+							"const taskDeadline = pm.environment.get(\"taskDeadline\");",
+							"const taskCreatedAt = pm.environment.get(\"taskCreatedAt\");",
+							"const taskCreatorId = pm.environment.get(\"user1Id\");",
+							"const taskAssigneeId = pm.environment.get(\"user2Id\");",
+							"",
+							"pm.test(\"Successfully fetching tasks\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    // expecting response to be an array",
+							"    pm.expect(jsonData).to.be.an(\"array\");",
+							"",
+							"    // expecting response to contain correct task",
+							"    const task = jsonData.find(t => t.id === Number(taskId));",
+							"    pm.expect(task).to.exist;",
+							"",
+							"    // expecting response to contain correct task header",
+							"    pm.expect(task).to.have.property(\"header\");",
+							"    pm.expect(task.header).to.equal(taskHeader);",
+							"",
+							"    // expecting response to contain correct task description",
+							"    pm.expect(task).to.have.property(\"description\");",
+							"    pm.expect(task.description).to.equal(taskDescription);",
+							"",
+							"    // expecting response to contain correct task status",
+							"    pm.expect(task).to.have.property(\"status\");",
+							"    pm.expect(task.status).to.equal(taskStatus);",
+							"",
+							"    // expecting response to contain correct task deadline",
+							"    pm.expect(task).to.have.property(\"deadline\");",
+							"    pm.expect(task.deadline).to.equal(taskDeadline);",
+							"",
+							"    // expecting response to contain the correct creator",
+							"    pm.expect(task).to.have.property(\"creator\");",
+							"    pm.expect(task.creator).to.be.an(\"object\");",
+							"    pm.expect(task.creator).to.have.property(\"id\");",
+							"    pm.expect(task.creator.id).to.equal(Number(taskCreatorId)); ",
+							"",
+							"    // expecting response to contain the correct assignee",
+							"    pm.expect(task).to.have.property(\"assignees\");",
+							"    pm.expect(task.assignees).to.be.an(\"array\");",
+							"    const assignee = task.assignees.find(a => a.id === Number(taskAssigneeId));",
+							"    pm.expect(assignee).to.exist;",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user1JwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/tasks",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Updating Task Successful",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// setting task attributes",
+							"const HEADER = \"This is simply an updated test task!\";",
+							"const DESCRIPTION = \"This task is updated made for testing purposes.\";",
+							"const STATUS = \"done\";",
+							"const DEADLINE = \"2024-12-16\";",
+							"const ASSIGNEE_IDS = [];",
+							"",
+							"// setting environment variables",
+							"pm.environment.set(\"updatedTaskHeader\", HEADER);",
+							"pm.environment.set(\"updatedTaskDescription\", DESCRIPTION);",
+							"pm.environment.set(\"updatedTaskStatus\", STATUS);",
+							"pm.environment.set(\"updatedTaskDeadline\", DEADLINE);",
+							"pm.environment.set(\"updatedTaskAssigneeIds\", JSON.stringify(ASSIGNEE_IDS));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"",
+							"const taskId = pm.environment.get(\"taskId\");",
+							"const updatedTaskHeader = pm.environment.get(\"updatedTaskHeader\");",
+							"const updatedTaskDescription = pm.environment.get(\"updatedTaskDescription\");",
+							"const updatedTaskStatus = pm.environment.get(\"updatedTaskStatus\");",
+							"const updatedTaskDeadline = pm.environment.get(\"updatedTaskDeadline\");",
+							"const updatedTaskAssigneeIds = pm.environment.get(\"updatedTaskAssigneeIds\");",
+							"",
+							"pm.test(\"Successfully updates existing task\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    // expecting response to contain correct id",
+							"    pm.expect(jsonData).to.have.property(\"id\");",
+							"    pm.expect(jsonData.id).to.equal(taskId);",
+							"",
+							"    // expecting response to contain updated header",
+							"    pm.expect(jsonData).to.have.property(\"header\");",
+							"    pm.expect(jsonData.header).to.equal(updatedTaskHeader);",
+							"",
+							"    // expecting response to contain updated description",
+							"    pm.expect(jsonData).to.have.property(\"description\");",
+							"    pm.expect(jsonData.description).to.equal(updatedTaskDescription);",
+							"",
+							"    // expecting response to contain updated status",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.equal(updatedTaskStatus);",
+							"",
+							"    // expecting response to contain updated deadline",
+							"    pm.expect(jsonData).to.have.property(\"deadline\");",
+							"    pm.expect(jsonData.deadline).to.equal(updatedTaskDeadline);",
+							"",
+							"    // expecting response to contain the updated list of assignees",
+							"    pm.expect(jsonData).to.have.property(\"assignees\");",
+							"    pm.expect(jsonData.assignees).to.be.an(\"array\");",
+							"    pm.expect(jsonData.assignees).to.be.empty;",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user1JwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"header\": \"{{updatedTaskHeader}}\",\n    \"description\": \"{{updatedTaskDescription}}\",\n    \"status\": \"{{updatedTaskStatus}}\",\n    \"deadline\": \"{{updatedTaskDeadline}}\",\n    \"assigneeIds\": {{updatedTaskAssigneeIds}}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/tasks/{{taskId}}",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Updating Task Unauthorized",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// setting task attributes",
+							"const HEADER = \"This is simply an updated test task!\";",
+							"const DESCRIPTION = \"This task is updated made for testing purposes.\";",
+							"const STATUS = \"done\";",
+							"const DEADLINE = \"2024-12-16\";",
+							"const ASSIGNEE_IDS = [];",
+							"",
+							"// setting environment variables",
+							"pm.environment.set(\"updatedTaskHeader\", HEADER);",
+							"pm.environment.set(\"updatedTaskDescription\", DESCRIPTION);",
+							"pm.environment.set(\"updatedTaskStatus\", STATUS);",
+							"pm.environment.set(\"updatedTaskDeadline\", DEADLINE);",
+							"pm.environment.set(\"updatedTaskAssigneeIds\", JSON.stringify(ASSIGNEE_IDS));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Unauthorized to update someone else's task\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user2JwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"header\": \"{{updatedTaskHeader}}\",\n    \"description\": \"{{updatedTaskDescription}}\",\n    \"status\": \"{{updatedTaskStatus}}\",\n    \"deadline\": \"{{updatedTaskDeadline}}\",\n    \"assigneeIds\": {{updatedTaskAssigneeIds}}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/tasks/{{taskId}}",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deleting Task Unauthorized",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Unauthorized to delete someone else's task\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user2JwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/tasks/{{taskId}}",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deleting Task Successful",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successfully deleting own task\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{user1JwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://34.88.182.249:8080/api/tasks/{{taskId}}",
+					"protocol": "http",
+					"host": [
+						"34",
+						"88",
+						"182",
+						"249"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
