@@ -1,10 +1,11 @@
 name: Validate and Initialize Infrastructure
 
 on:
-  push:
-    branches:
-      - gitactions
-  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Build, Scan, and Push Containers
+    types:
+      - completed
 
 jobs:
   validate-and-initialize-production-infrastructure:

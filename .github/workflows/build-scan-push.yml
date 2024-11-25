@@ -1,9 +1,11 @@
 name: Build, Scan, and Push Containers
 
 on:
-  push:
-    branches:
-      - gitactions
+  workflow_run:
+    workflows:
+      - Unit Tests
+    types:
+      - completed
 
 jobs:
   build-scan-and-push-containers:
