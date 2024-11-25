@@ -2,8 +2,7 @@ name: Setup Test Environment
 
 on:
   workflow_run:
-    workflows:
-      - Validate and Initialize Infrastructure
+    workflows: ["Validate and Initialize Infrastructure"]
     types:
       - completed
 

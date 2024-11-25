@@ -1,4 +1,4 @@
-name: Secrets Detection
+name: Lint Code Base
 
 on:
   workflow_run:
