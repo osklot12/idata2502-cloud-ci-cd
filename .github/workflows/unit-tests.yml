@@ -6,8 +6,6 @@ on:
       - Lint Code Base
     types:
       - completed
-    branches:
-      - gitactions
 
 jobs:
   run-frontend-unit-tests:

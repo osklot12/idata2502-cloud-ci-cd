@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - gitactions
+      - main
   pull_request:
     branches:
       - gitactions
+      - main
 
 jobs:
   run-lint:
