@@ -1,14 +1,11 @@
-name: Lint Code Base
+name: Secrets Detection
 
 on:
-  push:
-    branches:
-      - gitactions
-      - main
-  pull_request:
-    branches:
-      - gitactions
-      - main
+  workflow_run:
+    workflows:
+      - Setup Test Environment
+    types:
+      - completed
 
 jobs:
   run-lint:
