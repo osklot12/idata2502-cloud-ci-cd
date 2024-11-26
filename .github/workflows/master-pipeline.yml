@@ -465,6 +465,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
       # Tags commit as "successfull-(date of commit)"
     - name: Tag successful commit
       run: |
