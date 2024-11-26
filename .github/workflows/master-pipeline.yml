@@ -2,9 +2,9 @@ name: Master Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "gitactions" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "gitactions" ]
 
 jobs:
   # scans for secrets in the repository, revealing vulnerabilities
