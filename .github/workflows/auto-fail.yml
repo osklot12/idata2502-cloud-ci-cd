@@ -57,11 +57,7 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
         
-          git reset ${{ steps.find_tag.outputs.last_tag }} -- . ':.!github/workflows'
-        
-          git add .
-          git reset .github/workflows/*
-          git commit -m "Reverted to ${{ steps.find_tag.outputs.last_tag }} excluding workflow files"
+          git reset ${{ steps.find_tag.outputs.last_tag }} --'github/workflows'
         
           git push origin main --force
         
