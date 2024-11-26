@@ -342,7 +342,7 @@ jobs:
       # resetting database
       - name: Reset Database
         run: |
-          kubectl apply -f reset-database.yaml
+          kubectl apply -f infrastructure/k8s/test/jobs
           kubectl wait --for=condition=complete job/reset-database --timeout=120s
           kubectl delete job reset-database
 
