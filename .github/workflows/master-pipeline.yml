@@ -52,7 +52,7 @@ jobs:
         uses: github/super-linter@v5
         env:
           VALIDATE_ALL_CODEBASE: false
-          FILTER_REGEX_INCLUDE: ^(terraform/|backend/src/|frontend/src/).*
+          FILTER_REGEX_INCLUDE: ^(infrastructure/|tests/|backend/src/|frontend/src/).*
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # runs unit tests for the frontend
