@@ -52,7 +52,7 @@ spec:
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
 
-          # mounts persistent storage for postgresql data
+          # mounts ephemeral storage for postgresql data
           volumeMounts:
             - name: postgres-storage
               mountPath: "/var/lib/postgresql/data"
@@ -84,8 +84,7 @@ spec:
               memory: "2Gi"
               cpu: "1"
 
-      # defines persistent storage for the postgresql database
+      # defines ephemeral storage for the postgresql database
       volumes:
         - name: postgres-storage
-          persistentVolumeClaim:
-            claimName: postgres-pvc
+          emptyDir: {}
