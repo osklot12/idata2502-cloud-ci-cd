@@ -84,7 +84,8 @@ spec:
               memory: "2Gi"
               cpu: "1"
 
-      # defines ephemeral storage for the postgresql database
+      # defines persistent storage for the postgresql database
       volumes:
         - name: postgres-storage
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: postgres-pvc
