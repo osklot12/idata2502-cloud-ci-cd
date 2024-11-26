@@ -47,23 +47,23 @@ jobs:
           echo "last_successful_tag=$LAST_TAG" >> $GITHUB_ENV
           echo "::set-output name=last_tag::$LAST_TAG"
         
-          - name: Reset all except workflow files
-          run: |
+      - name: Reset all except workflow files
+        run: |
             if [ -z "${{ steps.find_tag.outputs.last_tag }}" ]; then
               echo "No successful tag found. Exiting."
               exit 1
             fi
-  
-            echo ".github/workflows/*" > .gitignore-reset
-  
-            git reset ${{ steps.find_tag.outputs.last_tag }}
-            git checkout .
-            git restore --staged .
-            git add --all
-            git reset -- .github/workflows/*
-  
+        
+            git fetch --all
+        
+            git reset ${{ steps.find_tag.outputs.last_tag }} -- .
+            git checkout ${{ steps.find_tag.outputs.last_tag }} -- .
+            git restore --staged .github/workflows/*
+            git checkout HEAD -- .github/workflows/*
+        
+            git add .
+            git reset .github/workflows/*
             git commit -m "Reverted to ${{ steps.find_tag.outputs.last_tag }} excluding workflow files"
-  
+        
             git push origin main --force
-  
-            rm .gitignore-reset
+        
