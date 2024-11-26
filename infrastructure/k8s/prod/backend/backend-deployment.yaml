@@ -38,18 +38,11 @@ spec:
 
       containers:
         - name: backend
-
-          # Specifies the image to use for the container
-          image: osklot12/spring-backend:latest
-
-          # Ensures the container always pulls the latest image version
+          # using the stable version for production
+          image: osklot12/spring-backend:stable
           imagePullPolicy: Always
-
-          # Exposes the application port
           ports:
             - containerPort: 8080
-
-          # Environment variables for the backend application
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "prod"

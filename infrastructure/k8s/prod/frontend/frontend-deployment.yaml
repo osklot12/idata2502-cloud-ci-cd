@@ -36,10 +36,9 @@ spec:
               echo "Backend is ready!";
 
       containers:
-
-          # setting up the container to run
         - name: frontend
-          image: osklot12/svelte-frontend:latest
+          # using the stable version for production
+          image: osklot12/svelte-frontend:stable
           imagePullPolicy: Always
           ports:
             - containerPort: 80
