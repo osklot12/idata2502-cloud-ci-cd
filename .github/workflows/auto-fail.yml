@@ -54,4 +54,6 @@ jobs:
             exit 1
           fi
           git reset --hard ${{ steps.find_tag.outputs.last_tag }}
+          git restore --staged .github/workflows/*
+          git checkout .github/workflows/*
           git push origin main --force
