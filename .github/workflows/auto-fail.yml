@@ -53,6 +53,9 @@ jobs:
           echo "No successful tag found. Exiting."
           exit 1
           fi
+
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
         
           git reset ${{ steps.find_tag.outputs.last_tag }} -- . ':.!github/workflows'
         
