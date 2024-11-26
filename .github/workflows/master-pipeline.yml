@@ -394,7 +394,7 @@ jobs:
 
       # running cypress tests
       - name: Run Cypress tests
-        run: FRONTEND_URL=${{ secrets.TEST_ENV_FRONTEND_URL }} npx cypress run --browser chrome
+        run: FRONTEND_URL=${{ secrets.TEST_ENV_FRONTEND_URL }} npx cypress run
         working-directory: tests/cypress
 
   # tags commit as successful
