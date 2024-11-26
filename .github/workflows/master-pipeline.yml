@@ -319,7 +319,7 @@ jobs:
           kubectl create secret generic db-credentials \
             --from-literal=username=${{ secrets.DB_USERNAME }} \
             --from-literal=password=${{ secrets.DB_PASSWORD }} \
-            --namespace=production --dry-run=client -o yaml | kubectl apply -f -
+            --dry-run=client -o yaml | kubectl apply -f -
 
       # applying kubernetes manifest files
       - name: Apply Kubernetes Manifests
@@ -545,7 +545,7 @@ jobs:
           kubectl create secret generic db-credentials \
             --from-literal=username=${{ secrets.DB_USERNAME }} \
             --from-literal=password=${{ secrets.DB_PASSWORD }} \
-            --namespace=production --dry-run=client -o yaml | kubectl apply -f -
+            --dry-run=client -o yaml | kubectl apply -f -
 
       # applying kubernetes manifest files
       - name: Apply Kubernetes Manifests
