@@ -1,15 +1,12 @@
 name: Revert Main on Failure
 
 on:
-  workflow_run:
-    workflows:
-
-    types:
-      - completed
+  push:
+    branches:
+      - gitactions
 
 jobs:
   revert-main:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -27,17 +24,24 @@ jobs:
       - name: Find last successful commit
         id: find_commit
         run: |
-          LAST_GOOD_COMMIT=$(git log --grep "CI Passed" --pretty=format:'%H' -n 1)
+          LAST_GOOD_COMMIT=$(git log --grep "Successful deployment" --pretty=format:'%H' -n 1)
           echo "last_successful_commit=$LAST_GOOD_COMMIT" >> $GITHUB_ENV
           echo "::set-output name=last_commit::$LAST_GOOD_COMMIT"
 
-      # Step 4: Revert the main branch to the last successful commit
+      # Step 4: Check if the push is a failure marker
+      - name: Check for failure marker
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" != *"mark as failure"* ]]; then
+            echo "Not a failure-triggered push. Skipping revert."
+            exit 0
+          fi
+
+      # Step 5: Revert the main branch to the last successful commit
       - name: Reset and force push main
         run: |
-          if [ -z "${{ steps.find_commit.outputs.last_commit }}" ]; then
+          if [ -z "${{ env.last_successful_commit }}" ]; then
             echo "No successful commit found. Exiting."
             exit 1
           fi
-          git reset --hard ${{ steps.find_commit.outputs.last_commit }}
+          git reset --hard ${{ env.last_successful_commit }}
           git push origin main --force
-
