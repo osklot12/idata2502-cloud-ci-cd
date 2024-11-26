@@ -42,6 +42,7 @@ jobs:
   lint:
     name: Lint Codebase
     runs-on: ubuntu-latest
+    needs: ["secrets-scan"]
     steps:
       # checkout code
       - name: Checkout Code
@@ -349,7 +350,6 @@ jobs:
       # resetting database
       - name: Reset Database
         run: |
-          kubectl delete job reset-database || true
           kubectl apply -n $NAMESPACE -f infrastructure/k8s/test/jobs/reset-database.yaml
           kubectl wait --for=condition=complete job/reset-database -n $NAMESPACE --timeout=120s
 
@@ -411,7 +411,7 @@ jobs:
   # Runs function to tag successfull commits
   tag-successful-commit:
     name: Successful tag
-    needs: ["cypress-tests", "postman-tests", "lint"]
+    needs: ["cypress-tests", "postman-tests"]
     runs-on: ubuntu-latest
 
     steps:
@@ -419,7 +419,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-      # Tags commit as "successfull-(date of commit)"
+      # Tags commit as "successful-(date of commit)"
     - name: Tag successful commit
       run: |
           TAG_NAME="successful-$(date +'%Y%m%d%H%M%S')"
@@ -464,6 +464,7 @@ jobs:
     name: Cleanup Test Environment
     runs-on: ubuntu-latest
     needs: ["postman-tests", "cypress-tests"]
+    if: always()
     steps:
       # checkout code
       - name: Checkout Repository

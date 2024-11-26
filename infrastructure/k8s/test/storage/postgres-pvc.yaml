@@ -10,9 +10,9 @@ spec:
   accessModes:
     # the volume can be mounted as read-write by a single node
     - ReadWriteOnce
-
   resources:
     # specifies the storage resources requested
     requests:
       # the amount of storage requested for the volume
       storage: 5Gi
+  storageClassName: ephemeral
