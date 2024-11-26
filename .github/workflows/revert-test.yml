@@ -1,0 +1,16 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - gitactions
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Tests
+        run: exit 1 # Simulate a failure for demonstration purposes
