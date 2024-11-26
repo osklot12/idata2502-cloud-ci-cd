@@ -16,7 +16,7 @@ jobs:
         run: exit 1 # should fail
 
       - name: Tag successful commit
-        if: ${{ success() }} # Ensure this only runs if previous steps succeed
+        if: ${{ success() }} # Runs only if previous steps succeed
         run: |
           TAG_NAME="successful-$(date +'%Y%m%d%H%M%S')"
           git config --global user.name "GitHub Actions"
@@ -24,19 +24,18 @@ jobs:
           git tag $TAG_NAME
           git push origin $TAG_NAME
 
-
   revert-main:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }} # Quotes optional
+    # Depend on `build-and-test` and always run if it fails
+    needs: build-and-test
+    if: ${{ needs.build-and-test.result == 'failure' }}
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: main  # Ensures we're working on the main branch
+          ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
-
 
       - name: Fetch tags
         run: git fetch --tags
@@ -44,15 +43,15 @@ jobs:
       - name: Find the last successful tag
         id: find_tag
         run: |
-            LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-            echo "last_successful_tag=$LAST_TAG" >> $GITHUB_ENV
-            echo "::set-output name=last_tag::$LAST_TAG"
+          LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "last_successful_tag=$LAST_TAG" >> $GITHUB_ENV
+          echo "::set-output name=last_tag::$LAST_TAG"
         
       - name: Reset to last successful tag
         run: |
-            if [ -z "${{ steps.find_tag.outputs.last_tag }}" ]; then
-              echo "No successful tag found. Exiting."
-              exit 1
-            fi
-            git reset --hard ${{ steps.find_tag.outputs.last_tag }}
-            git push origin main --force
+          if [ -z "${{ steps.find_tag.outputs.last_tag }}" ]; then
+            echo "No successful tag found. Exiting."
+            exit 1
+          fi
+          git reset --hard ${{ steps.find_tag.outputs.last_tag }}
+          git push origin main --force
