@@ -227,7 +227,7 @@ jobs:
 
       # applying infrastructure changes
       - name: Terraform Apply
-        run: terraform apply
+        run: terraform apply -auto-approve
         working-directory: infrastructure/terraform/prod
 
   # validates and initializes test infrastructure
@@ -276,7 +276,7 @@ jobs:
 
       # applying infrastructure changes
       - name: Terraform Apply
-        run: terraform apply
+        run: terraform apply -auto-approve
         working-directory: infrastructure/terraform/test
 
   # setting up test environment
