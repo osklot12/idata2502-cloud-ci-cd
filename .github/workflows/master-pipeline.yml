@@ -57,34 +57,16 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
 
           # paths to lint
-          FILE_PATHS: |
-            backend/src/main/java/ntnu/idata2502/backend/
-            backend/src/test/java/ntnu/idata2502/backend/
-            backend/src/main/resources/
-            backend/Dockerfile
-            backend/.env
-            
+          FILE_PATHS: |-
             frontend/src/
-            frontend/src/classes/
-            frontend/src/components/
-            frontend/src/services/
-            frontend/src/stores/
-            frontend/src/styles/
-            frontend/src/tests/
-            frontend/src/utils/
-            frontend/index.html
             frontend/Dockerfile
-            frontend/package.json
-            frontend/vite.config.js
-            frontend/tsconfig.json
-            
-            infrastructure/cac/ansible/
-            infrastructure/iac/terraform/
-            infrastructure/k8s/
-            infrastructure/packer/
+            backend/src/
+            backend/Dockerfile
+            infrastructure/
+            tests/
 
           # file types to validate
-          FILE_TYPES: |
+          FILE_TYPES: |-
             java
             yaml
             dockerfile
@@ -97,14 +79,6 @@ jobs:
             json
             terraform
             hcl
-
-          # paths to exclude
-          FILE_PATHS_EXCLUDE: |
-            backend/target/
-            frontend/node_modules/
-            infrastructure/k8s/secrets/
-            **/build/**
-            **/*.log
 
   # runs unit tests for the frontend
   frontend-unit-tests:
