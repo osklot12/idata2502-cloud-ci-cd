@@ -44,21 +44,36 @@ jobs:
         id: find_tag
         run: |
           LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "Found last successful tag: $LAST_TAG"
           echo "last_successful_tag=$LAST_TAG" >> $GITHUB_ENV
           echo "::set-output name=last_tag::$LAST_TAG"
         
       - name: Reset all except workflow files
         run: |
           if [ -z "${{ steps.find_tag.outputs.last_tag }}" ]; then
-          echo "No successful tag found. Exiting."
-          exit 1  
+            echo "No successful tag found. Exiting."
+            exit 1
           fi
 
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-        
-          git reset ${{ steps.find_tag.outputs.last_tag }} --'github/workflows'
-        
+
+          # Create a list of changed files, excluding .github/workflows
+          changed_files=$(git diff --name-only ${{ steps.find_tag.outputs.last_tag }} HEAD | grep -v '^\.github/workflows/')
+
+          if [ -z "$changed_files" ]; then
+            echo "No files to reset."
+            exit 0
+          fi
+
+          # Reset each file individually to the last successful tag
+          echo "$changed_files" | while read file; do
+            git checkout ${{ steps.find_tag.outputs.last_tag }} -- "$file"
+          done
+
+          # Stage the changes and commit
+          git add .
+          git commit -m "Reverted changes to ${{ steps.find_tag.outputs.last_tag }} excluding workflow files"
+
+          # Push the changes
           git push origin main --force
-        
-        
