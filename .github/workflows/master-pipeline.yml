@@ -374,8 +374,7 @@ jobs:
 
       # run postman collection
       - name: Run Postman Tests
-        run: |
-          newman run tests/postman/api_integration_tests.postman_collection.json
+        run: newman run api*.json --env-var apiUrl=${{ secrets.TEST_ENV_BACKEND_URL }}
 
   # running e2e (cypress) tests
   cypress-tests:
@@ -400,7 +399,7 @@ jobs:
 
       # running cypress tests
       - name: Run Cypress tests
-        run: npx cypress run --browser chrome
+        run: FRONTEND_URL=${{ secrets.TEST_ENV_FRONTEND_URL }} npx cypress run --browser chrome
         working-directory: tests/cypress
 
   # Runs function to tag successfull commits

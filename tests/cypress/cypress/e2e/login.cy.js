@@ -3,7 +3,7 @@ describe('login page', () => {
   // Checks if both input fields are working correctly
   it('checks if input fields work visually', () => {
     
-    cy.visit('http://35.228.18.196/#/auth/login');
+    cy.visit('/#/auth/login');
   
     cy.get('input[placeholder="Username"]').type('TestName').should('have.value', 'TestName');
 
@@ -11,7 +11,7 @@ describe('login page', () => {
   });
 
   it('should navigate to the registration page when clicking the register link', () => {
-    cy.visit('http://35.228.18.196/#/auth/login');
+    cy.visit('/#/auth/login');
 
     // Click the link
     cy.get('a[href="#/auth/register"]')
@@ -30,7 +30,7 @@ describe('login page', () => {
 
   it('should navigate to the correct page after login', () => {
 
-    cy.visit('http://35.228.18.196/#/auth/login');
+    cy.visit('/#/auth/login');
     
     cy.get('input[placeholder="Username"]').type('tester');
 
