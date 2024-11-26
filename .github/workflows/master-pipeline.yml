@@ -432,6 +432,26 @@ jobs:
         run: npx cypress run --browser chrome
         working-directory: tests/cypress
 
+  # Runs function to tag successfull commits
+  tag-successful-commit:
+    name: Successful tag
+    needs: ["cypress-tests", "postman-tests", "lint"]
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+      # Tags commit as "successfull-(date of commit)"
+    - name: Tag successful commit
+      run: |
+          TAG_NAME="successful-$(date +'%Y%m%d%H%M%S')"
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+
   # tags the images as stable
   tag-stable-images:
     name: Tag and Push Stable Images
@@ -573,3 +593,59 @@ jobs:
         run: |
           kubectl get all
 
+  revert-main:
+    # Depend on tag-successfull-commit and always run if it fails
+    needs: ["tag-successful-commit"]
+    if: ${{ failure() }} # Run this job if spesified previous jobs failed
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Fetch code
+      - name: Fetch tags
+        run: git fetch --tags
+        
+      # Scans for last commit with the "successful-(date)" tag
+      - name: Find the last successful tag
+        id: find_tag
+        run: |
+          LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "Found last successful tag: $LAST_TAG"
+          echo "last_successful_tag=$LAST_TAG" >> $GITHUB_ENV
+          echo "::set-output name=last_tag::$LAST_TAG"
+        
+      # resets the files to the last commit while excluding .github/workflow
+      - name: Reset all except workflow files
+        run: |
+          if [ -z "${{ steps.find_tag.outputs.last_tag }}" ]; then
+            echo "No successful tag found. Exiting."
+            exit 1
+          fi
+
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          # Create a list of changed files, excluding .github/workflows
+          changed_files=$(git diff --name-only ${{ steps.find_tag.outputs.last_tag }} HEAD | grep -v '^\.github/workflows/')
+
+          if [ -z "$changed_files" ]; then
+            echo "No files to reset."
+            exit 0
+          fi
+
+          echo "$changed_files" | while read file; do
+            git checkout ${{ steps.find_tag.outputs.last_tag }} -- "$file"
+          done
+
+          git add .
+          git commit -m "Reverted changes to ${{ steps.find_tag.outputs.last_tag }} excluding workflow files"
+
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "Pushing to branch: $current_branch"
+          git push origin "$current_branch" --force
