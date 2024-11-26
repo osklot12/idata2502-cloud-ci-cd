@@ -351,7 +351,7 @@ jobs:
   postman-tests:
     name: Postman Tests
     runs-on: ubuntu-latest
-    needs: ["setup-test-environment"]
+    needs: ["build-scan-and-push-containers", "setup-test-environment"]
     steps:
       # checkout code
       - name: Checkout Code
@@ -375,7 +375,7 @@ jobs:
   cypress-tests:
     name: Cypress Tests
     runs-on: ubuntu-latest
-    needs: ["setup-test-environment"]
+    needs: ["build-scan-and-push-containers", "setup-test-environment"]
     steps:
       # checkout code
       - name: Checkout code
@@ -494,7 +494,7 @@ jobs:
 
   # setting up production environment
   setup-production-environment:
-    name: Setup Production Environment and Deploy Containers
+    name: Deploy
     runs-on: ubuntu-latest
     needs: ["validate-and-initialize-production-infrastructure", "postman-tests", "cypress-tests"]
     steps:
