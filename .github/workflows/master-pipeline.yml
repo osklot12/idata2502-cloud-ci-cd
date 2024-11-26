@@ -59,7 +59,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
 
           # paths to lint
-          FILE_PATHS: |-
+          FILE_PATHS: |
             frontend/src/
             frontend/Dockerfile
             backend/src/
@@ -67,20 +67,7 @@ jobs:
             infrastructure/
             tests/
 
-          # file types to validate
-          FILE_TYPES: |-
-            java
-            yaml
-            dockerfile
-            env
-            svelte
-            javascript
-            typescript
-            css
-            html
-            json
-            terraform
-            hcl
+          
 
   # runs unit tests for the frontend
   frontend-unit-tests:
