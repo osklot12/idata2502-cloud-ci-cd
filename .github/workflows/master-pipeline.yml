@@ -672,4 +672,6 @@ jobs:
           git add .
           git commit -m "Reverted changes to ${{ steps.find_tag.outputs.last_tag }} excluding workflow files"
 
-          git push --force
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "Pushing to branch: $current_branch"
+          git push origin "$current_branch" --force
