@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Tests
-        run: exit 0 # good exit code
+        run: exit 1 # should fail
 
       - name: Tag successful commit
         if: ${{ success() }} # Ensure this only runs if previous steps succeed
