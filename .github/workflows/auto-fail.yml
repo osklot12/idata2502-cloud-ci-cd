@@ -51,14 +51,15 @@ jobs:
         run: |
           if [ -z "${{ steps.find_tag.outputs.last_tag }}" ]; then
           echo "No successful tag found. Exiting."
-          exit 1           
+          exit 1
           fi
         
-          git stash push -m "Stash workflow files" .github/workflows/*
-          git reset --hard ${{ steps.find_tag.outputs.last_tag }}
-          git stash apply --index
+          git reset ${{ steps.find_tag.outputs.last_tag }} -- . ':.!github/workflows'
+        
           git add .
           git reset .github/workflows/*
           git commit -m "Reverted to ${{ steps.find_tag.outputs.last_tag }} excluding workflow files"
+        
           git push origin main --force
+        
         
