@@ -324,6 +324,7 @@ jobs:
       # applying kubernetes manifest files
       - name: Apply Kubernetes Manifests
         run: |
+          kubectl apply -f infrastructure/k8s/test/storage
           kubectl apply -f infrastructure/k8s/test/db
           kubectl apply -f infrastructure/k8s/test/backend
           kubectl apply -f infrastructure/k8s/test/frontend
