@@ -3,13 +3,11 @@ name: Revert Main on Failure
 on:
   workflow_run:
     workflows:
-
-    types:
-      - completed
+      - Auto failure workflow
 
 jobs:
   revert-main:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }} # Quotes optional
     runs-on: ubuntu-latest
 
     steps:
@@ -18,26 +16,24 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: main  # Ensures we're working on the main branch
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 2: Fetch history to identify the last successful commit
-      - name: Fetch commit history
-        run: git fetch --depth=50
 
-      # Step 3: Identify the last successful commit
-      - name: Find last successful commit
-        id: find_commit
+      - name: Fetch tags
+        run: git fetch --tags
+        
+      - name: Find the last successful tag
+        id: find_tag
         run: |
-          LAST_GOOD_COMMIT=$(git log --grep "CI Passed" --pretty=format:'%H' -n 1)
-          echo "last_successful_commit=$LAST_GOOD_COMMIT" >> $GITHUB_ENV
-          echo "::set-output name=last_commit::$LAST_GOOD_COMMIT"
-
-      # Step 4: Revert the main branch to the last successful commit
-      - name: Reset and force push main
+            LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+            echo "last_successful_tag=$LAST_TAG" >> $GITHUB_ENV
+            echo "::set-output name=last_tag::$LAST_TAG"
+        
+      - name: Reset to last successful tag
         run: |
-          if [ -z "${{ steps.find_commit.outputs.last_commit }}" ]; then
-            echo "No successful commit found. Exiting."
-            exit 1
-          fi
-          git reset --hard ${{ steps.find_commit.outputs.last_commit }}
-          git push origin main --force
-
+            if [ -z "${{ steps.find_tag.outputs.last_tag }}" ]; then
+              echo "No successful tag found. Exiting."
+              exit 1
+            fi
+            git reset --hard ${{ steps.find_tag.outputs.last_tag }}
+            git push origin main --force
