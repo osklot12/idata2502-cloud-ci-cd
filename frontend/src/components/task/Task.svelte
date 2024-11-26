@@ -9,7 +9,7 @@
 
     export let task;
 
-    let isMinimized = true;AHSFHAJFSHAFJ;;;::::
+    let isMinimized = true;
     let isEditing = false;
 
     // reactive variable indicating whether user can edit task
