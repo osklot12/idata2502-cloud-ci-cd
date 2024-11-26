@@ -462,7 +462,6 @@ jobs:
   tag-successful-commit:
     name: Successful tag
     needs: ["lint"]
-    if: ${{ failure() }} # Run this job if spesified previous jobs failed
     runs-on: ubuntu-latest
 
     steps:
