@@ -31,7 +31,7 @@ jobs:
       # Step 4: Check if the push is a failure marker
       - name: Check for failure marker
         run: |
-          if [[ ${{ github.event.head_commit.message }} != *"mark as failure"* ]]; then
+          if [[ "${{ github.event.head_commit.message }}" != *"mark as failure"* ]]; then
             echo "Not a failure-triggered push. Skipping revert."
             exit 0
           fi
