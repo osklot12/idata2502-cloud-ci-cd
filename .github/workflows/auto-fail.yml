@@ -51,7 +51,7 @@ jobs:
         run: |
           if [ -z "${{ steps.find_tag.outputs.last_tag }}" ]; then
           echo "No successful tag found. Exiting."
-          exit 1
+          exit 1  
           fi
 
           git config user.name "GitHub Actions"
