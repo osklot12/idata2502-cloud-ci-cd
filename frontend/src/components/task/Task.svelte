@@ -7,7 +7,7 @@
     import User from "../../classes/User.js";
     import AssigneeHandler from "./AssigneeHandler.svelte";
 
-    export let task;afshgfkasgfka;;;;;;:
+    export let task;
 
     let isMinimized = true;
     let isEditing = false;

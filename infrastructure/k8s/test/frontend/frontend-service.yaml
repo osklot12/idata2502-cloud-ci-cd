@@ -4,7 +4,6 @@ kind: Service
 metadata:
   # the name of the service, used for referencing within the cluster
   name: frontend-service
-  namespace: default
 spec:
   # specifies the pods that this service targets, based on labels
   selector:
