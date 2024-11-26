@@ -318,44 +318,31 @@ jobs:
         run: |
           gcloud container clusters get-credentials tomorrow-cluster-test --region europe-north1 --project idata2502-project
 
-      - name: Create Test Namespace
-        id: create_namespace
-        run: |
-          export NAMESPACE="test-env-${{ github.run_id }}"
-          echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
-          kubectl create namespace $NAMESPACE
-
       # applying kubernetes manifest files
       - name: Apply Kubernetes Manifests
         run: |
-          kubectl apply -n $NAMESPACE -f infrastructure/k8s/test/secrets
-          kubectl apply -n $NAMESPACE -f infrastructure/k8s/test/db
-          kubectl apply -n $NAMESPACE -f infrastructure/k8s/test/backend
-          kubectl apply -n $NAMESPACE -f infrastructure/k8s/test/frontend
+          kubectl apply -f infrastructure/k8s/test/secrets
+          kubectl apply -f infrastructure/k8s/test/db
+          kubectl apply -f infrastructure/k8s/test/backend
+          kubectl apply -f infrastructure/k8s/test/frontend
 
       # waiting for deployment to roll out
       - name: Wait for Deployments to Roll Out
         run: |
-          kubectl rollout status deployment/backend-deployment -n $NAMESPACE --timeout=300s
-          kubectl rollout status deployment/frontend-deployment -n $NAMESPACE --timeout=300s
+          kubectl rollout status deployment/backend-deployment --timeout=300s
+          kubectl rollout status deployment/frontend-deployment --timeout=300s
 
       # ensuring all pods are ready
       - name: Wait for All Pods to Be Ready
         run: |
-          kubectl wait --for=condition=Ready pods -l app=backend -n $NAMESPACE --timeout=300s
-          kubectl wait --for=condition=Ready pods -l app=frontend -n $NAMESPACE --timeout=300s
-          kubectl wait --for=condition=Ready pods -l app=postgres -n $NAMESPACE --timeout=300s
-
-      # resetting database
-      - name: Reset Database
-        run: |
-          kubectl apply -n $NAMESPACE -f infrastructure/k8s/test/jobs/reset-database.yaml
-          kubectl wait --for=condition=complete job/reset-database -n $NAMESPACE --timeout=120s
+          kubectl wait --for=condition=Ready pods -l app=backend --timeout=300s
+          kubectl wait --for=condition=Ready pods -l app=frontend --timeout=300s
+          kubectl wait --for=condition=Ready pods -l app=postgres --timeout=300s
 
       # outputting kubernetes resource status
       - name: Output Kubernetes Status
         run: |
-          kubectl get all -n $NAMESPACE
+          kubectl get all
 
   # running integration (postman) tests
   postman-tests:
@@ -379,7 +366,8 @@ jobs:
 
       # run postman collection
       - name: Run Postman Tests
-        run: newman run tests/postman/api_integration_tests.postman_collection.json
+        run: |
+          newman run tests/postman/api_integration_tests.postman_collection.json
 
   # running e2e (cypress) tests
   cypress-tests:
@@ -498,10 +486,10 @@ jobs:
         run: |
           gcloud container clusters get-credentials tomorrow-cluster-test --region europe-north1 --project idata2502-project
 
-      # cleaning up test resources
+        # cleaning up test resources
       - name: Reset Kubernetes Resources
         run: |
-          kubectl delete namespace $NAMESPACE || true
+          kubectl delete all --all
 
   # setting up production environment
   setup-production-environment:
