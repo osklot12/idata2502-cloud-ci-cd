@@ -98,5 +98,3 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1"
-
-      progressDeadlineSeconds: 600

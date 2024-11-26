@@ -8,7 +8,7 @@ metadata:
 
 spec:
   progressDeadlineSeconds: 600
-  
+
   replicas: 2
 
   # specifies how the deployment identifies pods it manages
