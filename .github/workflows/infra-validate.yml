@@ -2,8 +2,7 @@ name: Validate and Initialize Infrastructure
 
 on:
   workflow_run:
-    workflows:
-      - Build, Scan, and Push Containers
+    workflows: ["Build, Scan, and Push Containers"]
     types:
       - completed
 
