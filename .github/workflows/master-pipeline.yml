@@ -97,7 +97,7 @@ jobs:
   backend-unit-tests:
     name: Unit Tests Backend
     runs-on: ubuntu-latest
-    needs: ["lint"]
+    needs: ["secrets-scan","lint"]
     steps:
       # checkout code
       - name: Checkout Code
