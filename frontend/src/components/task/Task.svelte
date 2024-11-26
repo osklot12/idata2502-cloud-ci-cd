@@ -12,6 +12,7 @@
     let isMinimized = true;
     let isEditing = false;
 
+    // reactive variable indicating whether user can edit task
     $: canEdit = String(task.creator.id) === String($userId);
 
     let updatedHeader = task.header;
