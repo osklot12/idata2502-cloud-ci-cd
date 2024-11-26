@@ -620,13 +620,15 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-          # Create a list of changed files, excluding .github/workflows
           changed_files=$(git diff --name-only ${{ steps.find_tag.outputs.last_tag }} HEAD | grep -v '^\.github/workflows/')
 
           if [ -z "$changed_files" ]; then
             echo "No files to reset."
             exit 0
           fi
+
+          echo "Files to be reset:"
+          echo "$changed_files"
 
           echo "$changed_files" | while read file; do
             git checkout ${{ steps.find_tag.outputs.last_tag }} -- "$file"
@@ -635,4 +637,6 @@ jobs:
           git add .
           git commit -m "Reverted changes to ${{ steps.find_tag.outputs.last_tag }} excluding workflow files"
 
-          git push origin main --force
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "Pushing to branch: $current_branch"
+          git push origin "$current_branch" --force
