@@ -369,7 +369,7 @@ jobs:
 
       # run postman collection
       - name: Run Postman Tests
-        run: newman run api_integration_tests.postman_collection.json --env-var apiUrl=${{ secrets.TEST_ENV_BACKEND_URL }}
+        run: newman run tests/postman/api_integration_tests.postman_collection.json --env-var apiUrl=${{ secrets.TEST_ENV_BACKEND_URL }}
 
   # running e2e (cypress) tests
   cypress-tests:
