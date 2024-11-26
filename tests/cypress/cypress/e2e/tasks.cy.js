@@ -1,6 +1,6 @@
 describe('task page', () => {
   beforeEach(() => {
-    cy.visit('http://35.228.18.196/#/tasks')
+    cy.visit('/#/tasks')
 
     cy.get('input[placeholder="Username"]').type('tester');
 

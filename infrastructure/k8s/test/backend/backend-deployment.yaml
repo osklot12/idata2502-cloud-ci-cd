@@ -73,7 +73,7 @@ spec:
 
             # Specifies the allowed CORS origin
             - name: CORS_ALLOWED_ORIGINS
-              value: "35.228.18.196"
+              value: "35.228.236.227 "
 
           # Checks if the backend service is ready to accept traffic
           readinessProbe:

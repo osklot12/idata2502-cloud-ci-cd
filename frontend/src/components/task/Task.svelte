@@ -7,11 +7,12 @@
     import User from "../../classes/User.js";
     import AssigneeHandler from "./AssigneeHandler.svelte";
 
-    export let task;afkgakfgafgak;;;;:::
+    export let task;
 
     let isMinimized = true;
     let isEditing = false;
 
+    // reactive variable indicating whether user can edit task
     $: canEdit = String(task.creator.id) === String($userId);
 
     let updatedHeader = task.header;
