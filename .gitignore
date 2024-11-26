@@ -28,4 +28,4 @@ backend/*.log
 **/terraform/*/crash.log
 **/terraform/*/*.tfplan
 
-node_modules/
+**/node_modules/

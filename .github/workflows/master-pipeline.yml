@@ -133,7 +133,7 @@ jobs:
   build-scan-and-push-containers:
     name: Build, Scan and Push Containers
     runs-on: ubuntu-latest
-    needs: ["secrets-scan", "lint", "frontend-unit-tests", "backend-unit-tests"]
+    needs: [ "secrets-scan", "lint", "frontend-unit-tests", "backend-unit-tests" ]
     steps:
       # checkout the code
       - name: Checkout code
@@ -278,7 +278,7 @@ jobs:
   setup-test-environment:
     name: Setup Test Environment
     runs-on: ubuntu-latest
-    needs: ["validate-and-initialize-test-infrastructure"]
+    needs: [ "validate-and-initialize-test-infrastructure" ]
     steps:
       # checkout code
       - name: Checkout Repository
@@ -313,10 +313,17 @@ jobs:
         run: |
           gcloud container clusters get-credentials tomorrow-cluster-test --region europe-north1 --project idata2502-project
 
+      # setting database credentials
+      - name: Create Kubernetes Secret for Database Credentials
+        run: |
+          kubectl create secret generic db-credentials \
+            --from-literal=username=${{ secrets.DB_USERNAME }} \
+            --from-literal=password=${{ secrets.DB_PASSWORD }} \
+            --namespace=production --dry-run=client -o yaml | kubectl apply -f -
+
       # applying kubernetes manifest files
       - name: Apply Kubernetes Manifests
         run: |
-          kubectl apply -f infrastructure/k8s/test/secrets
           kubectl apply -f infrastructure/k8s/test/db
           kubectl apply -f infrastructure/k8s/test/backend
           kubectl apply -f infrastructure/k8s/test/frontend
@@ -351,7 +358,7 @@ jobs:
   postman-tests:
     name: Postman Tests
     runs-on: ubuntu-latest
-    needs: ["build-scan-and-push-containers", "setup-test-environment"]
+    needs: [ "build-scan-and-push-containers", "setup-test-environment" ]
     steps:
       # checkout code
       - name: Checkout Code
@@ -375,7 +382,7 @@ jobs:
   cypress-tests:
     name: Cypress Tests
     runs-on: ubuntu-latest
-    needs: ["build-scan-and-push-containers", "setup-test-environment"]
+    needs: [ "build-scan-and-push-containers", "setup-test-environment" ]
     steps:
       # checkout code
       - name: Checkout code
@@ -400,16 +407,16 @@ jobs:
   # tags commit as successful
   tag-successful-commit:
     name: Successful tag
-    needs: ["postman-tests", "cypress-tests"]
+    needs: [ "postman-tests", "cypress-tests" ]
     runs-on: ubuntu-latest
     steps:
-    # checkout code
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # tags commit as "successful-(date of commit)"
-    - name: Tag successful commit
-      run: |
+      # tags commit as "successful-(date of commit)"
+      - name: Tag successful commit
+        run: |
           TAG_NAME="successful-$(date +'%Y%m%d%H%M%S')"
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
@@ -420,7 +427,7 @@ jobs:
   tag-stable-images:
     name: Tag Stable Images
     runs-on: ubuntu-latest
-    needs: ["postman-tests", "cypress-tests"]
+    needs: [ "postman-tests", "cypress-tests" ]
     steps:
       # checkout code
       - name: Checkout code
@@ -451,7 +458,7 @@ jobs:
   cleanup-test-environment:
     name: Cleanup Test Environment
     runs-on: ubuntu-latest
-    needs: ["postman-tests", "cypress-tests"]
+    needs: [ "postman-tests", "cypress-tests" ]
     if: always()
     steps:
       # checkout code
@@ -496,7 +503,7 @@ jobs:
   setup-production-environment:
     name: Deploy
     runs-on: ubuntu-latest
-    needs: ["validate-and-initialize-production-infrastructure", "tag-stable-images"]
+    needs: [ "validate-and-initialize-production-infrastructure", "tag-stable-images" ]
     steps:
       # checkout code
       - name: Checkout Repository
@@ -531,11 +538,18 @@ jobs:
         run: |
           gcloud container clusters get-credentials tomorrow-cluster-prod --region europe-north1 --project idata2502-project
 
+      # setting database credentials
+      - name: Create Kubernetes Secret for Database Credentials
+        run: |
+          kubectl create secret generic db-credentials \
+            --from-literal=username=${{ secrets.DB_USERNAME }} \
+            --from-literal=password=${{ secrets.DB_PASSWORD }} \
+            --namespace=production --dry-run=client -o yaml | kubectl apply -f -
+
       # applying kubernetes manifest files
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f infrastructure/k8s/prod/storage
-          kubectl apply -f infrastructure/k8s/prod/secrets
           kubectl apply -f infrastructure/k8s/prod/db
           kubectl apply -f infrastructure/k8s/prod/backend
           kubectl apply -f infrastructure/k8s/prod/frontend
@@ -567,7 +581,7 @@ jobs:
   revert-main:
     name: Automatic Rollback
     # depend on tag-successful-commit and always run if it fails
-    needs: ["tag-successful-commit"]
+    needs: [ "tag-successful-commit" ]
     if: ${{ failure() }} # Run this job if spesified previous jobs failed
     runs-on: ubuntu-latest
 
@@ -582,7 +596,7 @@ jobs:
       # Fetch code
       - name: Fetch tags
         run: git fetch --tags
-        
+
       # Scans for last commit with the "successful-(date)" tag
       - name: Find the last successful tag
         id: find_tag
@@ -591,7 +605,7 @@ jobs:
           echo "Found last successful tag: $LAST_TAG"
           echo "last_successful_tag=$LAST_TAG" >> $GITHUB_ENV
           echo "::set-output name=last_tag::$LAST_TAG"
-        
+
       # resets the files to the last commit while excluding .github/workflow
       - name: Reset all except workflow files
         run: |
