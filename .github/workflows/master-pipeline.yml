@@ -182,7 +182,6 @@ jobs:
   validate-and-initialize-production-infrastructure:
     name: Validates and Initializes Production Infrastructure
     runs-on: ubuntu-latest
-    needs: ["build-scan-and-push-containers"]
     steps:
       # checkout code
       - name: Checkout code
@@ -231,7 +230,6 @@ jobs:
   validate-and-initialize-test-infrastructure:
     name: Validates and Initializes Test Environment
     runs-on: ubuntu-latest
-    needs: ["build-scan-and-push-containers"]
     steps:
       # checkout code
       - name: Checkout code
@@ -280,7 +278,7 @@ jobs:
   setup-test-environment:
     name: Setup Test Environment
     runs-on: ubuntu-latest
-    needs: ["validate-and-initialize-production-infrastructure", "validate-and-initialize-test-infrastructure"]
+    needs: ["validate-and-initialize-test-infrastructure"]
     steps:
       # checkout code
       - name: Checkout Repository
@@ -399,18 +397,17 @@ jobs:
         run: FRONTEND_URL=${{ secrets.TEST_ENV_FRONTEND_URL }} npx cypress run --browser chrome
         working-directory: tests/cypress
 
-  # Runs function to tag successfull commits
+  # tags commit as successful
   tag-successful-commit:
     name: Successful tag
-    needs: ["cypress-tests", "postman-tests"]
+    needs: ["postman-tests", "cypress-tests"]
     runs-on: ubuntu-latest
-
     steps:
-    # Checkout code
+    # checkout code
     - name: Checkout code
       uses: actions/checkout@v3
 
-      # Tags commit as "successful-(date of commit)"
+    # tags commit as "successful-(date of commit)"
     - name: Tag successful commit
       run: |
           TAG_NAME="successful-$(date +'%Y%m%d%H%M%S')"
@@ -497,9 +494,9 @@ jobs:
 
   # setting up production environment
   setup-production-environment:
-    name: Setup Production Environment
+    name: Setup Production Environment and Deploy Containers
     runs-on: ubuntu-latest
-    needs: ["tag-stable-images"]
+    needs: ["validate-and-initialize-production-infrastructure", "postman-tests", "cypress-tests"]
     steps:
       # checkout code
       - name: Checkout Repository
@@ -556,13 +553,20 @@ jobs:
           kubectl wait --for=condition=Ready pods -l app=frontend --timeout=300s
           kubectl wait --for=condition=Ready pods -l app=postgres --timeout=300s
 
+      # deploying containers (in case manifest files are already applied)
+      - name: Deploying Containers
+        run: |
+          kubectl rollout restart deployment/frontend-deployment
+          kubectl rollout restart deployment/backend-deployment
+
       # outputting kubernetes resource status
       - name: Output Kubernetes Status
         run: |
           kubectl get all
 
   revert-main:
-    # Depend on tag-successfull-commit and always run if it fails
+    name: Automatic Rollback
+    # depend on tag-successful-commit and always run if it fails
     needs: ["tag-successful-commit"]
     if: ${{ failure() }} # Run this job if spesified previous jobs failed
     runs-on: ubuntu-latest
