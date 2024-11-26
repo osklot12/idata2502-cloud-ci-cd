@@ -461,7 +461,7 @@ jobs:
   # Runs function to tag successfull commits
   tag-successful-commit:
     name: Successful tag
-    needs: ["lint"]
+    needs: ["cypress-tests", "postman-tests", "lint"]
     runs-on: ubuntu-latest
 
     steps:
@@ -672,4 +672,4 @@ jobs:
           git add .
           git commit -m "Reverted changes to ${{ steps.find_tag.outputs.last_tag }} excluding workflow files"
 
-          git push origin main --force
+          git push --force
