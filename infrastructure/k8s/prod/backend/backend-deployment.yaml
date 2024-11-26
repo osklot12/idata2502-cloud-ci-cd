@@ -6,6 +6,8 @@ metadata:
   name: backend-deployment
 
 spec:
+  progressDeadlineSeconds: 600
+
   # Number of pod replicas to maintain
   replicas: 3
 
@@ -96,3 +98,5 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1"
+
+      progressDeadlineSeconds: 600
