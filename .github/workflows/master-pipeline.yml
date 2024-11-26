@@ -42,32 +42,18 @@ jobs:
   lint:
     name: Lint Codebase
     runs-on: ubuntu-latest
-    needs: ["secrets-scan"]
     steps:
       # checkout code
       - name: Checkout Code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
-      # runs super-linter
+      # running lint
       - name: Run Super-Linter
         uses: github/super-linter@v5
         env:
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: false
-
-          # paths to lint
-          FILE_PATHS: |
-            frontend/src/
-            frontend/Dockerfile
-            backend/src/
-            backend/Dockerfile
-            infrastructure/
-            tests/
-
-          
+          FILTER_REGEX_INCLUDE: ^(terraform/|backend/src/|frontend/src/).*
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # runs unit tests for the frontend
   frontend-unit-tests:
