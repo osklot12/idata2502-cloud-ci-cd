@@ -447,7 +447,7 @@ jobs:
           docker pull osklot12/svelte-frontend:latest
           DIGEST=$(docker inspect osklot12/svelte-frontend:latest --format='{{index .RepoDigests 0}}')
           echo "Svelte Frontend Digest: $DIGEST"
-          echo "FRONTEND_DIGEST=${DIGEST}" >> $GITHUB_ENV
+          echo "::set-output name=frontend_digest::$DIGEST"
 
       # pull and tag Spring backend image
       - name: Pull and Tag Spring Backend Image
@@ -455,7 +455,7 @@ jobs:
           docker pull osklot12/spring-backend:latest
           DIGEST=$(docker inspect osklot12/spring-backend:latest --format='{{index .RepoDigests 0}}')
           echo "Spring Backend Digest: $DIGEST"
-          echo "BACKEND_DIGEST=${DIGEST}" >> $GITHUB_ENV
+          echo "::set-output name=backend_digest::$DIGEST"
 
       # output the digests
       - name: Output Image Digests
@@ -566,14 +566,14 @@ jobs:
       # set backend image with digest
       - name: Update Backend Deployment with Digest
         run: |
-          kubectl set image deployment/backend-deployment backend=${{ env.BACKEND_DIGEST }} --record
-          echo "Updated backend deployment with image: ${{ env.BACKEND_DIGEST }}"
+          kubectl set image deployment/backend-deployment backend=${{ needs.tag-stable-images.outputs.backend_digest }} --record
+          echo "Updated backend deployment with image: ${{ needs.tag-stable-images.outputs.backend_digest }}"
 
       # set frontend image with digest
       - name: Update Frontend Deployment with Digest
         run: |
-          kubectl set image deployment/frontend-deployment frontend=${{ env.FRONTEND_DIGEST }} --record
-          echo "Updated frontend deployment with image: ${{ env.FRONTEND_DIGEST }}"
+          kubectl set image deployment/frontend-deployment frontend=${{ needs.tag-stable-images.outputs.frontend_digest }} --record
+          echo "Updated frontend deployment with image: ${{ needs.tag-stable-images.outputs.frontend_digest }}"
 
       # waiting for deployments to roll out
       - name: Wait for Deployments to Roll Out
@@ -599,7 +599,7 @@ jobs:
         run: |
           BACKEND_IMAGE=$(kubectl get deployment backend-deployment -o=jsonpath='{.spec.template.spec.containers[0].image}')
           echo "Backend Deployment Image: $BACKEND_IMAGE"
-          if [[ "$BACKEND_IMAGE" != *"${{ env.BACKEND_DIGEST }}"* ]]; then
+          if [[ "$BACKEND_IMAGE" != *"${{ needs.tag-stable-images.outputs.backend_digest }}"* ]]; then
             echo "Backend image update failed!"
             exit 1
           fi
@@ -609,7 +609,7 @@ jobs:
         run: |
           FRONTEND_IMAGE=$(kubectl get deployment frontend-deployment -o=jsonpath='{.spec.template.spec.containers[0].image}')
           echo "Frontend Deployment Image: $FRONTEND_IMAGE"
-          if [[ "$FRONTEND_IMAGE" != *"${{ env.FRONTEND_DIGEST }}"* ]]; then
+          if [[ "$FRONTEND_IMAGE" != *"${{ needs.tag-stable-images.outputs.frontend_digest }}"* ]]; then
             echo "Frontend image update failed!"
             exit 1
           fi
