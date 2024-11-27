@@ -28,4 +28,8 @@ backend/*.log
 **/terraform/*/crash.log
 **/terraform/*/*.tfplan
 
+# npm modules
 **/node_modules/
+
+# kubernetes secrets
+**/k8s/*/secrets/
